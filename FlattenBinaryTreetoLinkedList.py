@@ -15,7 +15,7 @@ class Solution:
                 curr = root.left
                 while curr.right:
                     curr = curr.right  # the last pre-order node
-                curr.right = root.right
+                curr.right = root.right  # point to the right root
                 root.right = root.left
                 root.left = None
             root = root.right

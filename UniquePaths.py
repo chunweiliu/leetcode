@@ -4,6 +4,8 @@ class Solution:
         # 2D list comprehension
         ans = [[0 for x in range(n)] for y in range(m)]
 
+        # can use 1D list for strage
+
         for x in range(n):
             ans[0][x] = 1
         for y in range(m):

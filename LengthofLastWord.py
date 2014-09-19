@@ -8,7 +8,7 @@ class Solution:
         sr = s[::-1]
         count = 0
         for x in range(len(sr)):
-            if sr[x] == " " and count == 0:  # spacical case
+            if sr[x] == " " and count == 0:  # special case
                 pass
             elif sr[x] == " ":
                 break

@@ -41,9 +41,9 @@ class Solution:
                         if a % 2 == 1:
                             line[a] += ' '
                             chars += 1
-                if p >= num_words:  # for the indexing
+                if p >= num_words:  # no other words for next indexing
                     break
-            if chars < L:  # for padding end
+            if chars < L:  # for padding the last line
                 line.append(' ' * int(L - chars))
             out.append("".join(line))
         return out

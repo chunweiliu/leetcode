@@ -22,8 +22,8 @@ class Solution:
             if flag is False:
                 return False
 
-        for x in range(len(board)):
-            col = [board[y][x] for y in range(len(board[0]))]
+        for x in range(len(board[0])):
+            col = [board[y][x] for y in range(len(board))]
             flag = self.checkLine(col)
             if flag is False:
                 return False

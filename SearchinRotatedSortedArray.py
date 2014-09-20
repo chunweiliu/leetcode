@@ -12,7 +12,7 @@ class Solution:
             if A[m] == target:
                 return m
             # Check order outside
-            if A[p] <= A[m]:
+            if A[p] <= A[m]:  # WA: if wrote A[p] < A[m]
                 # write down the easy if, and let else handle other cases
                 if A[p] <= target and target <= A[m]:
                     q = m - 1

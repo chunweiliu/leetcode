@@ -20,7 +20,7 @@ class Solution:
             if not_reverse:
                 pass
             else:
-                head = self.reverseBetween(head, m, n)
+                head = self.reverseBetween(head, m, n)  # must be head
                 not_reverse = k
                 m += k
                 n += k

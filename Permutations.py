@@ -2,7 +2,7 @@ class Solution:
     # @param num, a list of integer
     # @return a list of lists of integers
     def permute(self, num):
-        # Recursivly add a new member between old members
+        # Recursively add a new member between old members
         # Time: O(n!)
         # Space: O(n)
         if len(num) == 1:

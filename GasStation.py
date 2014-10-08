@@ -3,14 +3,17 @@ class Solution:
     # @param cost, a list of integers
     # @return an integer
     def canCompleteCircuit(self, gas, cost):
-        # Brute force. Time O(n^2) -> TLE, you want to store the index
-        # Don’t add up redundantly. Time O(n)
-        in_tank, total = 0, 0
-        start = -1
-        for x in range(len(gas)):
-            in_tank += gas[x] - cost[x]
-            total += gas[x] - cost[x]
-            if in_tank < 0:
-                start = x
-                in_tank = 0
-        return start + 1 if total >= 0 else -1
+        """Record the gas need to be filled,
+        check in the end if the need is satisfied
+        Time: O(n)
+        Space: O(1)
+        """
+        gas_left, gas_needed = 0, 0
+        start = 0
+        for i, (g, c) in enumerate(zip(gas, cost)):
+            gas_left += g - c
+            if gas_left < 0:
+                gas_needed -= gas_left
+                gas_left = 0
+                start = i + 1
+        return start if gas_left >= gas_needed else -1

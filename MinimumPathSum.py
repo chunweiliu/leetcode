@@ -2,23 +2,27 @@ class Solution:
     # @param grid, a list of lists of integers
     # @return an integer
     def minPathSum(self, grid):
-        # initial 2D answer
-        Q = grid
-        m = len(Q)
-        n = len(Q[0])
-        P = [[0] * n for x in range(m)]
+        """DP find minimum from (i-1, j), (i, j-1)
+        Time: O(mn)
+        Space: O(n)
+        Conner: grid is empty
+        """
+        if len(grid) == 0 or len(grid[0]) == 0:
+            return grid
 
-        P[0][0] = Q[0][0]
-        for y in range(1, m):
-            P[y][0] = P[y - 1][0] + Q[y][0]
-        for x in range(1, n):
-            P[0][x] = P[0][x - 1] + Q[0][x]
-        for y in range(1, m):
-            for x in range(1, n):
-                P[y][x] = min(P[y - 1][x], P[y][x - 1]) + Q[y][x]
-        return P[m - 1][n - 1]
+        total = 0
+        path_sum = [0] * len(grid[0])
+        for j, element in enumerate(grid[0]):
+            total += element
+            path_sum[j] = total
 
-if __name__ == "__main__":
-    #grid = [[1, 2, 3], [4, 5, 6]]
-    grid = [[1, 2], [5, 6], [1, 1]]
-    print Solution().minPathSum(grid)
+        for i, row in enumerate(grid):
+            if i == 0:
+                continue
+            for j, element in enumerate(row):
+                if j == 0:
+                    path_sum[j] += element
+                else:
+                    path_sum[j] = min(path_sum[j-1] + element,
+                                      path_sum[j] + element)
+        return path_sum[len(grid[0]) - 1]

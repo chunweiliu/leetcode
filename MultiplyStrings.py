@@ -35,7 +35,45 @@ class Solution:
             ans = ans[none_zero:len(ans)]
         return ''.join(str(d) for d in ans)
 
+    def multiply2(self, num1, num2):
+        """Reverse and multiply
+        Time: O(nm)
+        Space: O(n+m-1)
+        Corner: empty string, all zeros
+        """
+        N, M = len(num1), len(num2)
+        if N == 0 and M == 0:
+            return None
+        if N == 0:
+            return num2
+        if M == 0:
+            return num1
+
+        # num1, num2 = reversed(num1), reversed(num2)  # this wrong, why?
+        num1, num2 = num1[::-1], num2[::-1]
+        num = [0] * (N + M)
+        for i, m in enumerate(num1):
+            for j, n in enumerate(num2):
+                num[i + j] += int(n) * int(m)
+
+        for i, d in enumerate(num):
+            if d >= 10:  # prevent i+1 overflow
+                num[i + 1] += num[i] / 10
+                num[i] %= 10
+
+        # delete leading zeros
+        num = num[::-1]
+        non_zero_digit = 0
+        while non_zero_digit < M + N and num[non_zero_digit] == 0:
+            non_zero_digit += 1
+
+        # deal with all zeros
+        if non_zero_digit == M + N:
+            return '0'
+        return ''.join(map(str, num[non_zero_digit:]))
+
+
 if __name__ == "__main__":
-    num1 = '99'
-    num2 = '11'
-    print Solution().multiply(num1, num2)
+    num1 = '98'
+    num2 = '9'
+    print Solution().multiply2(num1, num2)

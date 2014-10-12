@@ -14,7 +14,7 @@ class Solution:
             return a
 
         # add as binary
-        a, b = list(a), list(b)
+        a, b = map(int, a), map(int, b)
         c = list()
         s = 0
         while a or b:

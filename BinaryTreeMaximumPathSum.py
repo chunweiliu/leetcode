@@ -36,4 +36,4 @@ class Solution:
 
             level_max = max(left_sum, right_sum) + root.val
             self.max_value = max(self.max_value, level_max)
-        return level_max        
+        return level_max

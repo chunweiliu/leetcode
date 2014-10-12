@@ -1,52 +1,30 @@
-# Definition for a binary tree node
-class TreeNode:
-    def __init__(self, x):
-    	# Preorder
-        self.val = x
-        self.left = None
-        self.right = None
-
-class Tree:
-	def __init__(self):
-		self.root = None
-
-	def addNode(self, data):
-		return TreeNode(data)
-
-	def insert(self, root, data):
-		if root is None:
-			return self.addNode(data)
-		else:
-			if data <= root.val:
-				root.left = self.insert(root.left, data)
-			else:
-				root.right = self.insert(root.right, data)
-			return root
-
-	def printTree(self, root):
-		if root is None:
-			pass
-		else:
-			self.printTree(root.left)
-			print root.val
-			self.printTree(root.right)
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
 
 
+class Solution:
     # @param root, a tree node
     # @return an integer
-    # def maxDepth(self, root):
-    #     maxd = 1
-    #     if self.left is None and self.right is None:
-    #     	return maxd
-    #     else:
-    #     	maxDepth(self.left, self)
-    #     	maxDepth(self.right, self)
-        
-if __name__ == "__main__":
-    btree = Tree()
-    root = TreeNode(0)
-    for i in range(5):
-    	data = int(i)+1
-    	btree.insert(root, data)
+    def maxDepth(self, root):
+        """Traverse the tree and record the max depth
+        Time: O(n)
+        Space: O(n)
+        """
+        self.max_depth = 0  # ask about this
 
-    btree.printTree(root)
+        def max_depth(root, depth):
+            if not root.left and not root.right:  # leaves
+                self.max_depth = depth if depth > self.max_depth \
+                    else self.max_depth
+            if root.left:
+                max_depth(root.left, depth + 1)
+            if root.right:
+                max_depth(root.right, depth + 1)
+
+        if root:
+            max_depth(root, 1)
+        return self.max_depth

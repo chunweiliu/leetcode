@@ -20,7 +20,7 @@ class Solution:
                 if sum == 0:
                     paths.append(path)
 
-            if root.left:
+            if root.left:  # copy of path, so they won't affect each
                 path_finder(root.left, sum-root.left.val,
                             list(path+[root.left.val]), paths)
             if root.right:

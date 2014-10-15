@@ -1,62 +1,27 @@
-import heapq
 import unittest
 
 
 class Bit:
-    def find_next_large(self, n):
-        """Find next larger integer with the same numbers of bits
-        Time: O(b)
-        Space: O(1)
-        """
-        # 10011...01100
-        #         k <-
-        # 10011...10100
-        # 10011...10001
-        def set_bit(n, k, b):
-            if b:
-                return (n | (1 << k))
-            else:
-                return (n & ~(1 << k))
+    def set_bit(self, n, k, b):
+        if b:
+            return (n | (1 << k))
+        else:
+            return (n & ~(1 << k))
 
-        def find_bit(n, k):
-            return (n & (1 << k)) > 0
-            # return n >> k & 1
+    def get_bit(self, n, k):
+        # return (n & (1 << k)) > 0
+        return n >> k & 1
 
-        # find monotonic increasing
-        bit_index = 0
-        zero_count = 0
-        while find_bit(n, bit_index) == 0:
-            bit_index += 1
-            zero_count += 1
-        while find_bit(n, bit_index) == 1:
-            bit_index += 1
-
-        # set swap the (0, 1) in not monotonic place
-        n = set_bit(n, bit_index, 1)
-        n = set_bit(n, bit_index-1, 0)
-
-        # reverse the rest of bits
-        bit_index -= 2
-        while zero_count > 0:
-            n = set_bit(n, bit_index, 0)
-            bit_index -= 1
-            zero_count -= 1
-        while bit_index >= 0:
-            n = set_bit(n, bit_index, 1)
-            bit_index -= 1
-        return n
-
-    #Elements of programming interviews (C0)
-    def parity(self, bits):
+    def parity(self, n):
         """Check how many bits is one
         Time: O(b)
-        Space: O(1)
+
         """
         solution = 0
-        while bits:
+        while n:
             #solution ^= bits & 1  # why not? not shift
             solution ^= 1
-            bits &= bits - 1  # drop the LSB, the rest of bits don't change
+            n &= n - 1  # drop the LSB, the rest of bits don't change
         return solution
 
     def swap_bit(self, n, i, j):
@@ -64,7 +29,7 @@ class Bit:
         Time: O(1)
         Space: O(1)
         """
-        if (n >> i) & 1 != (n >> j) & 1:
+        if self.get_bit(n, i) != self.get_bit(n, j):
             n ^= (1 << i | 1 << j)
         return n
 
@@ -74,9 +39,9 @@ class Bit:
         Space: O(1)
         Corner: carry
         """
-        if a is None:
+        if not a:
             return b
-        if b is None:
+        if not b:
             return a
 
         # add as binary
@@ -96,30 +61,95 @@ class Bit:
             c.append(1)
         return ''.join(map(str, c[::-1]))
 
+        # return str(bin(int(a, 2) + int(b, 2)))[2:]  # one-liner answer
+
+    def find_next_large1(self, n):
+        """Find next larger integer with the same numbers of bits
+        Time: O(b)
+        Space: O(1)
+        """
+        # 10011...01100
+        #         k <-
+        # 10011...10100
+        # 10011...10001
+        # find monotonic increasing
+
+        bit_index = 0
+        zero_count = 0
+        while self.get_bit(n, bit_index) == 0:
+            bit_index += 1
+            zero_count += 1
+        while self.get_bit(n, bit_index) == 1:
+            bit_index += 1
+
+        # set swap the (0, 1) in not monotonic place
+        n = self.set_bit(n, bit_index, 1)
+        n = self.set_bit(n, bit_index-1, 0)
+
+        # reverse the rest of bits
+        bit_index -= 2
+        while zero_count > 0:
+            n = self.set_bit(n, bit_index, 0)
+            bit_index -= 1
+            zero_count -= 1
+        while bit_index >= 0:
+            n = self.set_bit(n, bit_index, 1)
+            bit_index -= 1
+        return n
+
+    def find_next_large2(self, n):
+        """Find next larger integer with the same numbers of bits
+        Time: O(b)
+        Space: O(1)
+        """
+        bits = bin(n)[2:]  # represent as string
+        reversed_bits = list(bits[::-1])
+
+        # find position to swap
+        for i, bit in enumerate(reversed_bits):
+            if i > 0 and reversed_bits[i - 1] > bit:
+                break
+
+        # swap bits
+        if i == len(reversed_bits) - 1 and reversed_bits[i - 1] <= bit:
+            i += 1  # all increasing so we need to add 1
+            reversed_bits[-1] = '0'
+            reversed_bits.append('1')
+        else:
+            reversed_bits[i] = '1'
+            reversed_bits[i-1] = '0'
+
+        # reorder the reset
+        reversed_bits[:i-1] = sorted(reversed_bits[:i-1], reverse=True)
+
+        # format
+        return int('0b'+''.join(reversed_bits[::-1]), 2)
+
 
 class Stack:
-    def __init__(self, value=list(), max=list()):
-        self.value = value
-        self.max = max
+    def __init__(self):
+        self.values = list()
+        self.maxs = list()  # [max_key, num_max_key]
 
     def push(self, value):
-        self.value.append(value)
-        if self.max:
-            current_max = self.max[-1][0]
+        self.values.append(value)
+
+        if self.maxs:
+            current_max = self.maxs[-1][0]
             if current_max < value:
-                self.max.append([value, 1])
+                self.maxs.append([value, 1])
             elif current_max == value:
                 current_max[1] += 1
         else:
-            self.max.append([value, 1])
+            self.maxs.append([value, 1])
 
     def pop(self):
-        drop = self.value.pop()
-        if drop == self.max[-1][0]:
-            if self.max[-1][1] == 1:
-                self.max.pop(-1)
+        drop = self.values.pop()
+        if drop == self.maxs[-1][0]:
+            if self.maxs[-1][1] == 1:
+                self.maxs.pop(-1)
             else:
-                self.max[-1][1] -= 1
+                self.maxs[-1][1] -= 1
         else:
             pass
         return drop
@@ -130,15 +160,16 @@ class Stack:
         else:
             return None
 
-    def honai_move(self, n, towers, start, to, temp):
+    def honai(self, n, towers, start, to, temp):
         """Recursively move as follow:
         1. Move n - 1 from current to temporal
         2. Move the last one from current to destination
         3. Move n - 1 from temporal to destination
+        [[1, 2, 3], [], []] -> [[], [], [1, 2, 3]]
         """
         if n > 0:
             self.honai(n - 1, towers, start, temp, to)
-            towers[to].insert(0, towers[start].pop())
+            towers[to].insert(0, towers[start].pop(0))
             self.honai(n - 1, towers, temp, to, start)
 
 
@@ -150,19 +181,20 @@ class String:
         """
         if len(s) <= 1:
             return [s]
+
         ret = list()
         char = s[0]
-        reminders = self.permute_string(s[1:])
-        for reminder in reminders:
-            for x in range(len(reminder) + 1):
-                reminder_list = list(reminder)
-                reminder_list.insert(x, char)
-                ret.append(''.join(reminder_list))
+        permuted_strings = self.permute_string(s[1:])
+        for permuted_string in permuted_strings:
+            for i in range(len(permuted_string) + 1):
+                copy = list(permuted_string)
+                copy.insert(i, char)
+                ret.append(''.join(copy))
         return ret
 
     # sort using key function, key is the value for comparison
     def sort_strings(self, strings):
-        """Generate key function for sorting
+        """Generate key function for sorting (len, anagram, order)
         Time: O(n log n)
         Space: O(n)
         """
@@ -178,30 +210,26 @@ class String:
         return [string[-1] for string in sorted_tuples]
 
      # Check anonymous letter
+
     def is_from_texts(self, letter, texts):
         """Look up dictionary (hash table)
         Time: O(m + n) for building dictionary
         Space: O(m + n)
         """
         def get_histogram(texts):
-            histogram = dict()
+            hist = dict()
             for text in texts:
-                try:
-                    histogram[text] += 1
-                except KeyError:
-                    histogram[text] = 1
-            return histogram
+                hist[text] = hist.get(text, 0) + 1
+            return hist
 
-        letter_histogram = get_histogram(letter)
-        text_histogram = get_histogram(texts)
+        hist_letter = get_histogram(letter)
+        hist_texts = get_histogram(texts)
 
-        for key, value in letter_histogram.iteritems():
+        # compare two histograms
+        for key, value in hist_letter.iteritems():
             if key == ' ':
                 continue
-            try:
-                if text_histogram[key] < value:
-                    return False
-            except KeyError:
+            if key not in hist_texts or value > hist_texts[key]:
                 return False
         return True
 
@@ -220,9 +248,9 @@ class String:
         Corners: word2 is empty string
         """
         if len(word1) < len(word2):
-            word1, word2 = word2, word1
+            word1, word2 = word2, word1  # |word1| > |word2|
 
-        columns = len(word2) + 1
+        columns = len(word2) + 1  # why + 1?
         last_costs = range(columns)
         for i, w1 in enumerate(word1):
             this_costs = [i + 1] * columns
@@ -313,7 +341,7 @@ class String:
         Space: O(1)
         Corner: len(digits) is 0 or 1
         """
-        if len(digits) == 0:
+        if not digits:
             return ['']
         if len(digits) == 1:
             return list(self.keyboard[digits])
@@ -335,10 +363,7 @@ class String:
         # compute a frequency table
         table = dict()
         for s in string:
-            try:
-                table[s] += 1
-            except KeyError:
-                table[s] = 1
+            table[s] = table.get(s, 0) + 1
 
         # go through the table
         for s in string:
@@ -360,32 +385,32 @@ class List:
         Time: O(n)
         Space: O(1)
         """
-        if head.next is None:
+        if not head or not head.next:
             return head
-        prev = None
-        curr = head
+
+        prev, curr = None, head
         while curr:
             next = curr.next
             curr.next = prev
             prev = curr
             curr = next
-        head = prev
-        return head
+        return prev
 
     def reverse_pair(self, head):
         """Reverse linked list in 2 pairs in place
         Time: O(n)
         Space: O(1)
         """
-        if head.next is None:
+        if not head or not head.next:
             return head
+
         dummy = ListNode(0)
         dummy.next = head
         prev = dummy
         while prev.next:
             last = prev.next
             curr = last.next
-            if curr is None:
+            if not curr:
                 break
             last.next = curr.next
             curr.next = prev.next
@@ -397,10 +422,15 @@ class List:
         """Reverse linked list in k pairs in place
         Time: O(n)
         Space: O(1)
+        Corners: k == 0 or 1
         """
-        # why k = 1 failed?
-        prev, next = None, None
-        curr = head
+        if not head or k == 0:
+            return head
+
+        if k == 1:  # why k = 1 failed? Head.next relink to its origin next
+            k = float('inf')
+
+        prev, curr = None, head
         step = 0
         while curr and step < k:
             next = curr.next
@@ -408,6 +438,7 @@ class List:
             prev = curr
             curr = next
             step += 1
+
         if next:
             head.next = self.reverse_kpair(next, k)
         return prev
@@ -419,9 +450,9 @@ class List:
         """
         # Corner cases:
         # 1. None headers, 2. run out of anyone
-        if head1 is None:
+        if not head1:
             return head2
-        if head2 is None:
+        if not head2:
             return head1
 
         head = tail = ListNode(0)
@@ -442,9 +473,9 @@ class List:
         """Use merge_two_lists with recursive
         Time: O(n log k)
         Space: O(k)
-        Corner: return list node
+        Hint: return list node
         """
-        if len(lists) == 0:
+        if not lists:
             return None
 
         if len(lists) == 1:
@@ -459,35 +490,30 @@ class List:
 
     def removeNthFromEnd(self, head, n):
         """End advance front with n nodes
-        Time: O(#node)
+        Time: O(#nodes)
         Space: O(1)
         Corner cases: n = 0, 1
         """
-        if n == 0:
+        if not head or not head.next:
             return head
 
-        # Need dummy for special case
-        dummy = ListNode(0)
-        dummy.next = head
-
-        prev = dummy
-        front = end = head
-
-        # advance end
-        while n > 0:
-            end = end.next
+        ahead = head
+        while n:
+            ahead = ahead.next
             n -= 1
 
-        # advance both
-        while end:
-            prev = front
-            front = front.next
-            end = end.next
+        dummy = ListNode(0)
+        dummy.next = head
+        prev = dummy
+        curr = head
+        while ahead:
+            prev = curr
+            curr = curr.next
+            ahead = ahead.next
 
-        # remove front
-        prev.next = front.next
-        front.next = None
-
+        # remove curr
+        prev.next = curr.next
+        curr.next = None
         return dummy.next
 
     def addTwoNumbers(self, l1, l2):
@@ -510,7 +536,7 @@ class List:
             curr.next = ListNode(num % 10)
             curr = curr.next
 
-        if num / 10 == 1:  # max
+        if num / 10 == 1:  # might be 10 to 19
             curr.next = ListNode(1)
         return dummy.next
 
@@ -532,68 +558,44 @@ class List:
 
         if fast:  # cycle exist
             slow2 = head
-            while slow is not slow2:
+            while slow is not slow2:  # prevent {1 -> 2 -> 1}
                 slow = slow.next
                 slow2 = slow2.next
             return slow
         return None
 
-    def merge_even_old(self, head):
-        """0 -> 1 -> 2 -> 3 -> 4 : 0 -> 2 -> 4 -> 1 -> 3
+    def merge_even_odd(self, head):
+        """0 -> 1 -> 2 -> 3 -> 4 to
+           0 ------> 2
+           c    s    n
+           0    1-------> 3 ...
         Time: O(n)
         Space: O(1)
         Corner: 0 -> 1 -> 2
                 e    o    ne
         """
-        if not head or not head.next:
+        if not head or not head.next or not head.next.next:
             return head
 
-        even_tail = head  # start from zero
-        odd_head = odd_tail = even_tail.next
+        skip_even = False
+        odd_head = head.next
+        curr, skip, next = head, head.next, head.next.next
+        while next:
+            curr.next = next  # skip
 
-        # advance each head by two
-        next_even, next_odd = None, None
-        while odd_tail.next:
-            next_even = odd_head.next
-            if next_even:
-                next_odd = next_even.next
-            else:
-                next_odd = None
+            curr = skip  # relabel
+            skip = next
+            next = next.next
 
-            even_tail.next = next_even
-            even_tail = next_even
+            skip_even ^= True
+            curr.next = None  # if skip even, this would be the end of odds
 
-            odd_tail.next = next_odd
-            odd_tail = next_odd
+        if skip_even:
+            skip.next = odd_head
+        else:
+            curr.next = odd_head
 
-        even_tail.next = odd_head  # relink two parts
         return head
-
-    def remove_kth_from_list(self, head, k):
-        """Two pointers, curr and ahead
-        Time: O(n)
-        Space: O(1)
-        Corner: 0, 1, 1 - 2
-        """
-        if not head:
-            return None
-
-        dummy = ListNode(0)
-        dummy.next = head
-        prev = dummy
-        curr = ahead = head
-
-        while k > 1:
-            ahead = ahead.next
-            k -= 1
-
-        while ahead.next:
-            prev = curr
-            curr = curr.next
-            ahead = ahead.next
-
-        prev.next = curr.next
-        return dummy.next
 
 
 class TreeNode:
@@ -608,22 +610,23 @@ class Tree:
     def preorder_recursive(self, root):
         """Pre oreder traversal using recursive
         Time: O(n)        1
-        Space: O(n)     2   3
+        Space: O(h)     2   3
         """
-        if root is None:
+        if not root:
             return
-        else:
-            print root.val
-            self.preorder(root.left)
-            self.preorder(root.right)
+
+        print root.val
+        self.preorder(root.left)
+        self.preorder(root.right)
 
     def inorder_recursive(self, root):
         """In order traversal using recursive
         Time: O(n)
-        Space: O(n)
+        Space: O(h)
         """
-        if root is None:
+        if not root:
             return
+
         self.inorder(root.left)
         print root.val
         self.inorder(root.right)
@@ -631,19 +634,19 @@ class Tree:
     def postorder_recursive(self, root):
         """Post order traversal using recursive
         Time: O(n)       3
-        Space: O(n)    1   2
+        Space: O(h)    1   2
         """
-        if root is None:
+        if not root:
             return
-        else:
-            self.postorder(root.left)
-            self.postorder(root.right)
-            print root.val
+
+        self.postorder(root.left)
+        self.postorder(root.right)
+        print root.val
 
     def preorder(self, root):
         """Go deep left and pop stack, if stack is empty than we are done
         Time: O(n)
-        Space: O(h)
+        Space: O(h)  -> stack is efficient even the complexity is the same
         """
         stack = list()
         curr = root
@@ -652,7 +655,7 @@ class Tree:
             if curr:
                 print curr.val
                 stack.append(curr)
-                curr = curr.left
+                curr = curr.left  # go deep left
             else:
                 if len(stack) == 0:
                     done = True
@@ -687,14 +690,16 @@ class Tree:
         """
         prev, curr = None, root
         while curr:
-            if prev is None or prev.left is curr or prev.right is curr:  # down
+            # going down
+            if not prev or prev.left is curr or prev.right is curr:
                 if curr.left:
                     next = curr.left
                 else:
                     print curr.val
                     next = curr.right if curr.right else curr.parent
-            else:  # going up
-                if prev is curr.left:
+            # going up
+            else:
+                if prev is curr.left:  # came from left (like pop)
                     print curr.val
                     next = curr.right if curr.right else curr.parent
                 else:  # subtree over
@@ -709,10 +714,9 @@ class Tree:
         """
         in_stack = list()
         out_stack = list()
-        curr = root
 
-        in_stack.append(curr)
-        while len(in_stack) > 0:
+        in_stack.append(root)
+        while in_stack:
             temp = in_stack.pop()
             if temp:
                 if temp.left:
@@ -720,46 +724,28 @@ class Tree:
                 if temp.right:
                     in_stack.append(temp.right)
             out_stack.append(temp)
-        while len(out_stack) > 0:
+
+        while out_stack:
             temp = out_stack.pop()
             print temp.val
 
-    def build_binary_search_tree(self, A):
-        """Build binary tree recursivly given a sorted array
-        Time: O(log n)
-        Space: O(h)
-        """
-        #     3
-        #   2   4
-        # 1       5
-        if len(A) == 0:
-            return
-        elif len(A) == 1:
-            return TreeNode(A[0])
-        else:
-            m = len(A) / 2
-            root = TreeNode(A[m])
-            root.left = self.build_binary_search_tree(A[:m])
-            root.right = self.build_binary_search_tree(A[m+1:])
-            return root
-
     def common_ancestor(self, r, p, q):
-        """Find the first root for two nodes split in left and right
-        Time: O(n)
+        """Find the first root split two nodes in left and right
+        Time: O(n^2)
         Space: O(h)
         """
-        def cover(root, node):
-            if root is None:
+        def cover(root, node):  # if the tree contain the node
+            if not root:
                 return False
             if root is node:
                 return True
             return cover(root.left, node) or cover(root.right, node)
 
         if cover(r.left, p) and cover(r.left, q):
-            ret = self.common_ancestor(r.left, p, q)
+            return self.common_ancestor(r.left, p, q)
         if cover(r.right, p) and cover(r.right, q):
-            ret = self.common_ancestor(r.right, p, q)
-        return ret
+            return self.common_ancestor(r.right, p, q)
+        return r
 
     # Match trees
     def contain_tree(self, t1, t2):
@@ -767,23 +753,25 @@ class Tree:
         Time: O(mn)
         Space: O(1)
         """
+        # match tree given root
+        def match_tree(t1, t2):
+            if not t1 and not t2:
+                return True
+            if not t1 or not t2:
+                return False
+            if t1.val != t2.val:
+                return False
+            return match_tree(t1.left, t2.left) and \
+                match_tree(t1.right, t2.right)
+
+        # try to match on many subtree of t1
         def subtree(t1, t2):
-
-            def match_tree(t1, t2):
-                if t1 is None and t2 is None:
-                    return True
-                if t1 is None or t2 is None:
-                    return False
-                return match_tree(t1.left, t2.left) and \
-                    match_tree(t1.right, t2.right)
-
-            if t1.val == t2.val:
-                if match_tree(t1, t2):
-                    return True
+            if match_tree(t1, t2):
+                return True
             else:
                 return subtree(t1.left, t2) or subtree(t1.right, t2)
 
-        if t2 is None:
+        if not t2:
             return True
         else:
             return subtree(t1, t2)
@@ -794,16 +782,16 @@ class Tree:
         Time: O(n)
         Space: O(h) for recursives
         """
-        MAX_VALUE = 10 ** 10
-        MIN_VALUE = -10 ** 10
-
-        def is_valid_bst_recursive(self, root, lower, upper):
-            if root is None:
+        def is_valid_bst_recursive(root, lower, upper):
+            if not root:
                 return True
             elif root.val <= lower or root.val >= upper:
                 return False
             return is_valid_bst_recursive(root.left, lower, root.val)\
                 and is_valid_bst_recursive(root.right, root.val, upper)
+
+        MAX_VALUE = float('inf')
+        MIN_VALUE = float('-inf')
 
         return is_valid_bst_recursive(root, MIN_VALUE, MAX_VALUE)
 
@@ -813,8 +801,8 @@ class Tree:
         Time: O(n)
         Space: O(1)
         """
-        MIN_VALUE = -1000000
-        if root is None:
+        MIN_VALUE = float('-inf')
+        if not root:
             return True
 
         ret = True
@@ -833,7 +821,7 @@ class Tree:
                         ret = False
                     last_value = curr.val
                     curr = curr.right
-                else:
+                else:  # set end of left tree to the root
                     pred.right = curr
                     curr = curr.left
             else:
@@ -844,48 +832,55 @@ class Tree:
         return ret
 
     def buildTree_preorder_inorder(self, preorder, inorder):
-        """Recursively build tree
+        """Recursively build tree         1
+        preorder = [1 2 3 4 5]         2     4
+        inorder = [3 2 1 4 5]       3           5
         Time: O(n log n) average
         Space: O(log n)
         """
         if not preorder:
             return None
 
-        root = preorder[0]
-        left_count = inorder.index(root)  # elements in left tree
+        root_val = preorder[0]
+        left_count = inorder.index(root_val)  # elements in left tree
 
         left_inorder = inorder[:left_count]
-        left_preorder = preorder[1:1+left_count]
+        left_preorder = preorder[1:1+left_count]  # 0: root
 
         right_inorder = inorder[1+left_count:]
         right_preorder = preorder[1+left_count:]
 
-        ret = TreeNode(root)
-        ret.left = self.buildTree_preorder_inorder(left_preorder, left_inorder)
-        ret.right = self.buildTree_preorder_inorder(
+        root = TreeNode(root_val)
+        root.left = self.buildTree_preorder_inorder(
+            left_preorder, left_inorder)
+        root.right = self.buildTree_preorder_inorder(
             right_preorder, right_inorder)
-        return ret
+        return root
 
     def buildTree_inorder_postorder(self, inorder, postorder):
         """Recuresively build
+        1. Find root
+        2. Construct left and right
         Time: O(n log n) in average
         Space: O(log n) in average
         """
         if not postorder:
             return None
 
-        root_val = postorder[-1]
+        root_val = postorder[-1]  # postorder root in the end
         left_count = inorder.index(root_val)
 
         left_inorder = inorder[:left_count]
         left_postorder = postorder[:left_count]
 
         right_inorder = inorder[1+left_count:]
-        right_postorder = postorder[left_count:len(postorder)-1]  # end index!
+        right_postorder = postorder[left_count:-1]  # not include index[-1]
 
         root = TreeNode(root_val)
-        root.left = self.buildTree(left_inorder, left_postorder)
-        root.right = self.buildTree(right_inorder, right_postorder)
+        root.left = self.buildTree_inorder_postorder(
+            left_inorder, left_postorder)
+        root.right = self.buildTree_inorder_postorder(
+            right_inorder, right_postorder)
         return root
 
     def hasPathSum(self, root, sum):
@@ -900,14 +895,14 @@ class Tree:
 
             found = False
             if root.left:
-                found |= preorder(root.left, sum - root.left.val)
+                found |= preorder(root.left, sum-root.left.val)
             if root.right:
-                found |= preorder(root.right, sum - root.right.val)
+                found |= preorder(root.right, sum-root.right.val)
             return found
 
         if not root:
             return False
-        return preorder(root, sum - root.val)
+        return preorder(root, sum-root.val)
 
     def pathSum(self, root, sum):
         """Find all paths from root to leaves had path sum equal to sum
@@ -916,9 +911,8 @@ class Tree:
         Style: Using a CONTAINER
         """
         def path_finder(root, sum, path, paths):
-            if not root.left and not root.right:  # leaves
-                if sum == 0:
-                    paths.append(path)
+            if not root.left and not root.right and sum == 0:  # leaves
+                paths.append(path)
 
             if root.left:  # copy of path, so they won't affect each
                 path_finder(root.left, sum-root.left.val,
@@ -934,10 +928,11 @@ class Tree:
         return paths
 
     def maxPathSum(self, root):
-        """Record max path so far in a container
+        """Record max path (not only root to leaves) so far
+        Compare 1. left 2. right 3. left + root + right 4. level
         Time: O(n)
         Space: O(n)
-        Style: Using MEMBER
+        Style: Using INSTANCE VARIABLE
         """
         def maxPathSumRec(self, root):
             if not root:
@@ -956,29 +951,196 @@ class Tree:
 
                 level_max = max(left_sum, right_sum) + root.val
                 self.max_value = max(self.max_value, level_max)
-            return level_max
+            return level_max  # this is a vaild node to leaves path
 
         self.max_value = float('-inf')
         self.maxPathSumRec(root)
         return self.max_value
 
+    def maxDepth(self, root):
+        """Traverse a tree and record the max depth in instance variable
+        Time: O(n)
+        Space: O(n)
+        """
+        def max_depth(root, depth):
+            if not root.left and root.right:
+                self.max_depth = max(self.max_depth, depth)
+            if root.left:
+                max_depth(root.left, depth+1)
+            if root.right:
+                max_depth(root.right, depth+1)
+
+        if not root:
+            return 0
+
+        self.max_depth = float('-inf')
+        max_depth(root, 1)  # Leetcode define root has 1 depth
+        return self.max_depth
+
+    def minDepth(self, root):
+        """Traverse a tree and record the min depth in instance variable
+        Time: O(n)
+        Space: O(n)
+        """
+        def min_depth(root, depth):
+            if not root.left and not root.right:
+                self.min_depth = min(self.min_depth, depth)
+            if root.left:
+                min_depth(root.left, depth+1)
+            if root.right:
+                min_depth(root.right, depth+1)
+
+        if not root:
+            return 0
+
+        self.min_depth = float('inf')
+        min_depth(root, 1)
+        return self.min_depth
+
+    def get_height(self, root):
+        """Python has limit stack for local function
+        Therefore, define a member function to get height
+            0  -> depth = 0
+        1      -> height = 0
+        """
+        if not root:
+            return -1
+
+        left_height = self.get_height(root.left)
+        right_height = self.get_height(root.right)
+
+        # definition of unbalance only true if both sides are balance
+        if left_height == self.UNBALANCE or \
+           right_height == self.UNBALANCE or \
+           abs(left_height - right_height) > 1:  # definition
+            return self.UNBALANCE
+        return 1 + max(left_height, right_height)
+
+    def isBalanced(self, root):
+        """Compare HEIGHT of left and right trees of a root
+        Time: O(n)
+        Space: O(n)
+        """
+        if not root:
+            return True
+        self.UNBALANCE = -2
+
+        return self.get_height(root) != self.UNBALANCE
+
+    def isBalanced2(self, root):
+        """If a tree is blance, abs(max_height-min_height) <= 1
+        Time: O(n)
+        Space: O(n)
+        """
+        return abs(self.maxDepth(root)-self.minDepth(root)) <= 1
+
+    def isSymmetric(self, root):
+        """Recursive(left, right) and (right, left)
+        Time: O(n)
+        Space: O(n)
+        """
+        def is_symmetric(left, right):
+            #Just a node comparison, but have careful order
+            if not left and not right:
+                return True
+            if not left or not right:  # put or after and, avoid both None
+                return False
+            if left.val != right.val:
+                return False
+            return is_symmetric(left.left, right.right) and \
+                is_symmetric(left.right, right.left)
+
+        if not root:
+            return True
+        return is_symmetric(root.left, root.right)
+
+    def sortedArrayToBST(self, num):
+        """Set median as root, recursive for left and right
+        Time: O(log n)
+        Space: O(n)
+        """
+        if not num:
+            return None
+        if len(num) == 1:
+            return TreeNode(num[0])
+
+        middle = len(num) / 2
+        root = TreeNode(num[middle])
+        root.left = self.sortedArrayToBST(num[:middle])
+        root.right = self.sortedArrayToBST(num[middle+1:])
+        return root
+
+    def sortedListToBST(self, head):
+        """Split list into two parts, recursive found the median
+        Time: O(n)
+        Space: O(n)
+        """
+        def get_linked_list_length(head):
+            count = 0
+            while head:
+                head = head.next
+                count += 1
+            return count
+
+        def advance_linked_list(head, step):
+            prev = None
+            while step:
+                prev = head
+                head = head.next
+                step -= 1
+            return (prev, head)
+
+        def split_linked_list(head):
+            length = get_linked_list_length(head)
+            left_tail, median = advance_linked_list(head, length/2)
+
+            # deal with left
+            left = None if median is head else head  # for n = 1
+            if left_tail:  # split the left part
+                left_tail.next = None
+
+            # deal with right and median
+            right = median.next
+            median.next = None
+
+            return (left, median, right)
+
+        if not head:
+            return None
+
+        left, median, right = split_linked_list(head)
+        root = TreeNode(median.val)
+        root.left = self.sortedListToBST(left)
+        root.right = self.sortedListToBST(right)
+        return root
+
+    def find_tree_sum(self, root, target, numbers=[], depth=0):
+        """Traverse from different nodes, ask if above have met the target
+        Time: O(n log n)
+        Space: O(n log n)
+        """
+        def print_path(numbers, start, end):  # print from root
+            for number in numbers[start:end+1]:
+                print number,
+            print
+
+        if not root:
+            return
+        numbers.append(root.val)
+
+        # figure out if sum above this depth equal to target
+        residual = target
+        for i, number in enumerate(reversed(numbers)):  # from root
+            residual -= number
+            if residual == 0:
+                print_path(numbers, depth-i, depth)
+
+        # recursive find left and right
+        self.find_tree_sum(root.left, target, list(numbers), depth+1)
+        self.find_tree_sum(root.right, target, list(numbers), depth+1)
+
 
 class Array:
-    def find_k_max(self, A, k):
-        """Find top k elements in an array
-        Time: O(k^2 n)
-        Space: O(k)
-        """
-        top_k = list()
-        for y in range(k):
-            max_value = A[0]
-            for x in range(1, len(A)):
-                if A[x] not in top_k:
-                    if A[x] > max_value:
-                        max_value = A[x]
-            top_k.append(max_value)
-        return top_k.pop()
-
     # Find kth max
     def find_kth_max(self, numbers, k):
         """Applying find max kth Time
@@ -1026,7 +1188,7 @@ class Array:
             pivot = A[(start + end) / 2]
             rank = self.dutch_flag(A, pivot, start, end)
 
-            if rank == k - 1:  # k to the index
+            if rank == k - 1:  # kth small in k-1 position
                 return pivot
             elif rank > k - 1:
                 end = rank - 1
@@ -1038,7 +1200,37 @@ class Array:
         Time: O(n) in average! worse case O(n^2) (median of medians O(n))
         Space: O(1)
         """
-        return self.find_kth_small(numbers, 1 + len(numbers)/2)
+        return self.find_kth_small(numbers, 1 + len(numbers)/2)  # 1th, 2nd,...
+
+    def findMedianSortedArrays(self, A, B):
+        # Using recursive to find the kth element
+        # Time: O(log(m + n)), m = len(A), n = len(B)
+        # Space: O(log(m + n)), recursive
+        total = len(A) + len(B)
+        if (total % 2) != 0:
+            return self.findKthFromTwo(A, B, total/2 + 1)
+        else:
+            return .5 * (self.findKthFromTwo(A, B, total/2) +
+                         self.findKthFromTwo(A, B, total/2 + 1))
+
+    def findKthFromTwo(self, A, B, k):
+        if k > len(A) + len(B):
+            return None
+
+        # assume |A| > |B|
+        if len(A) < len(B):
+            return self.findKthFromTwo(B, A, k)  # know which one we run out
+        if not B:
+            return A[k - 1]
+        if k == 1:
+            return min(A[0], B[0])
+
+        pb = min(k / 2, len(B))
+        pa = k - pb
+        if A[pa - 1] < B[pb - 1]:
+            return self.findKthFromTwo(A[pa:], B, k - pa)
+        else:
+            return self.findKthFromTwo(A, B[pb:], k - pb)
 
     def rearrange(self, numbers):
         """Rearrange numbers to N0 < N1 > N2 < N3 > N4 ...
@@ -1052,15 +1244,12 @@ class Array:
         smaller = [x for x in numbers if x < median]
         equalto = [x for x in numbers if x == median]
 
-        while equalto:  # smaller always >= larger
+        while equalto:  # balance the number, smaller always >= larger
             need = smaller if len(greater) >= len(smaller) else greater
-            need += [equalto.pop()]
+            need.append(equalto.pop())
 
         for i, number in enumerate(numbers):
-            if i % 2 != 0:
-                numbers[i] = greater[i/2]
-            else:
-                numbers[i] = smaller[i/2]
+            numbers[i] = greater[i/2] if i % 2 != 0 else smaller[i/2]
 
         # final check:
         for i, number in enumerate(numbers):
@@ -1070,7 +1259,7 @@ class Array:
                     return None
         return numbers
 
-    def rearrange2(self, numbers):
+    def rearrange_wrong(self, numbers):
         """Rearrange numbers to N0 < N1 > N2 < N3 > N4 ...
         *** THIS IS NOT A CORRECT ANSWER ***
         Time: O(n)
@@ -1101,18 +1290,15 @@ class Array:
     def find_mode(self, A):
         """Find mode using dictionary and list
         Time: O(n)
-        Space: O(n)
+        Space: O(k)
         """
         hist = dict()
-        for x in range(len(A)):
-            try:
-                hist[A[x]] += 1
-            except KeyError:
-                hist[A[x]] = 1
+        for x in A:
+            hist[x] = hist.get(x, 0) + 1
 
-        k = hist.keys()
-        v = hist.values()
-        return k[v.index(max(v))]
+        keys = hist.keys()
+        values = hist.values()
+        return keys[values.index(max(values))]
 
     def find_target_or_less(self, numbers, target, candidate=None):
         """Find a target in a sorted list using binary search with candidate
@@ -1123,22 +1309,19 @@ class Array:
         if not numbers:
             return None
         if len(numbers) == 1:
-            if numbers[0] <= target:
-                return numbers[0]
-            else:
-                return candidate
+            return numbers[0] if numbers[0] <= target else candidate
 
         # binary search
-        index = len(numbers) / 2
-        median = numbers[index]
+        middle = len(numbers) / 2
+        median = numbers[middle]
         if median == target:
             return median
         if median < target:
             return self.find_target_or_less(
-                numbers[index + 1:], target, median)
+                numbers[middle+1:], target, median)
         if median > target:
             return self.find_target_or_less(
-                numbers[:index], target, candidate)
+                numbers[:middle], target, candidate)
 
     def find_less_than_target(self, numbers, target, candidate=None):
         """Binary search with conditions
@@ -1147,17 +1330,17 @@ class Array:
         """
         if not numbers:
             return None
-        if len(numbers) == 1:
+        if len(numbers) == 1:  # for stopping recursion
             return numbers[0] if numbers[0] < target else candidate
 
-        index = len(numbers) / 2
-        median = numbers[index]
+        middle = len(numbers) / 2
+        median = numbers[middle]
         if median >= target:
             return self.find_less_than_target(
-                numbers[:index], target, candidate)
+                numbers[:middle], target, candidate)
         if median < target:
             return self.find_less_than_target(
-                numbers[index+1:], target, median)
+                numbers[middle+1:], target, median)
 
     def find_index_less_than_target(self, numbers, target):
         """Find index using binary search
@@ -1167,12 +1350,9 @@ class Array:
         if not numbers:
             return None
 
-        if len(numbers) == 1:
-            return numbers[0] if numbers[0] < target else None
-
         candidate = None
         start, end = 0, len(numbers) - 1
-        while start < end:
+        while start <= end:  # why equal? one number can be handdle
             middle = (start+end) / 2
             median = numbers[middle]
 
@@ -1182,96 +1362,78 @@ class Array:
                 candidate = middle
                 start = middle + 1
 
-        return middle if median < target else candidate
+        return candidate
 
-    def find_target_in_rotated_sorted_array(self, numbers, target):
-        """Binary search with complicated conditions
-        Time: O(log n)
-        Space: O(1)
-        """
-        left, right = 0, len(numbers) - 1
-        while left <= right:
-            mid = (left + right) / 2
-            if numbers[mid] == target:
-                return mid
-
-            if numbers[mid] >= numbers[left]:  # order in the front
-                if numbers[left] <= target and target < numbers[mid]:
-                    right = mid - 1
-                else:
-                    left = mid + 1
-            else:  # order in the end
-                if numbers[mid] < target and target <= numbers[right]:
-                    left = mid + 1
-                else:
-                    right = mid - 1
-        return None
-
-    def find_index_larger_than_k(self, numbers, k):
+    def find_index_larger_than_target(self, numbers, target):
         """Binary search with a candidate variable
         Time: O(log n)
         Space: O(1)
         """
-        if len(numbers) == 0:
-            return -1
-        if len(numbers) == 1:
-            if numbers[0] > k:
-                return 0
-            else:
-                return -1
+        if not numbers:
+            return None
 
+        candidate = None
         start, end = 0, len(numbers) - 1
-        candidate = -1
         while start <= end:
-            mid = (start + end) / 2
-            if numbers[mid] <= k:
-                start = mid + 1
+            middle = (start+end) / 2
+            median = numbers[middle]
+
+            if median <= target:
+                start = middle + 1
             else:
-                candidate = mid
-                end = mid - 1
+                candidate = middle
+                end = middle - 1
+
         return candidate
 
-    def find_ai_equal_i(A):
+    def find_index_target_in_rotated_sorted_array(self, numbers, target):
+        """Binary search with complicated conditions
+        1 2 3   4   5 6 7  # order in the front
+        5 6 7   1   2 3 4  # order in the end
+        Time: O(log n)
+        Space: O(1)
+        """
+        if not numbers:
+            return None
+
+        start, end = 0, len(numbers) - 1
+        while start <= end:
+            middle = (start + end) / 2
+            if numbers[middle] == target:
+                return middle
+
+            if numbers[middle] >= numbers[start]:  # order in the front
+                if numbers[start] <= target and target < numbers[middle]:
+                    end = middle - 1
+                else:
+                    start = middle + 1
+            else:  # order in the end
+                if numbers[middle] < target and target <= numbers[end]:
+                    start = middle + 1
+                else:
+                    end = middle - 1
+        return None
+
+    def find_ai_equal_i(numbers):
         """BS A[i] - i: Assume A[i] is distinguish to others and A is sorted
         Time: O(log n)
         Space: O(1)
         Corner: empty array
         """
-        if len(A) == 0:
-            return -1
-        p, q = 0, len(A)
-        mid = p + q / 2
-        while p <= q:
-            if A[mid] == mid:
-                return mid
-            elif A[mid] > mid:
-                q = mid - 1
+        if not numbers:
+            return None
+
+        start, end = 0, len(numbers)
+        while start <= end:
+            middle = (start+end) / 2
+            median = numbers[middle]
+            if median == middle:
+                return middle
+            if median < middle:
+                start = middle + 1
             else:
-                p = mid + 1
-        return -1
-
-    def make_changes(self, n, coin=25):
-        """Recursive make changes for n amount using m coins
-        Time: O(nm)
-        Space: O(m)
-        """
-        # $100 -> n=100, coin=25
-        # make_changes(100, 0)+make_changes(75, 0)+...+make_changes(25, 0)+1
-        ways = 0
-        if coin == 25:
-            next_coin = 10
-        elif coin == 10:
-            next_coin = 5
-        elif coin == 5:
-            next_coin = 1
-        elif coin == 1:
-            return 1
-
-        ways, coin_num = 0, 0
-        while coin_num * coin <= n:
-            ways += self.make_changes(n - coin_num * coin, next_coin)
-            coin_num += 1
-        return ways
+                end = middle - 1
+        return None
 
     def twoSum(self, num, target):
         """Reduce range by two pointers
@@ -1285,18 +1447,18 @@ class Array:
         # append original index in front
         sorted_num = sorted(enumerate(num), key=lambda num: num[1])
 
-        p, q = 0, len(num) - 1
-        while p < q:
-            s = sorted_num[p][1] + sorted_num[q][1]
-            if s == target:
+        start, end = 0, len(num) - 1
+        while start < end:
+            num = sorted_num[start][1] + sorted_num[end][1]
+            if num == target:
                 break
-            if s > target:
-                q -= 1
+            if num > target:
+                end -= 1
             else:
-                p += 1
+                start += 1
 
         # compute original index
-        small, large = sorted_num[p][0]+1, sorted_num[q][0]+1
+        small, large = sorted_num[start][0]+1, sorted_num[end][0]+1
         if small > large:
             small, large = large, small
         return (small, large)
@@ -1312,26 +1474,26 @@ class Array:
             if i > 0 and a == num[i - 1]:
                 continue
 
-            p, q = i + 1, len(num) - 1
-            while p < q:
+            start, end = i + 1, len(num) - 1
+            while start < end:
                 # check duplicates
-                if p > i + 1 and num[p] == num[p - 1]:
-                    p += 1
+                if start > i + 1 and num[start] == num[start - 1]:
+                    start += 1
                     continue
 
-                if q < len(num) - 1 and num[q] == num[q + 1]:
-                    q -= 1
+                if end < len(num) - 1 and num[end] == num[end + 1]:
+                    end -= 1
                     continue
 
-                b, c = num[p], num[q]
+                b, c = num[start], num[end]
                 if a + b + c == 0:
                     ans.append([a, b, c])
-                    p += 1
-                    q -= 1
+                    start += 1
+                    end -= 1
                 elif a + b + c < 0:
-                    p += 1
+                    start += 1
                 else:
-                    q -= 1
+                    end -= 1
         return ans
 
     def three_less_sum(self, num, d):
@@ -1352,7 +1514,7 @@ class Array:
             while b_index < c_index:
                 b, c = num[b_index], num[c_index]
                 if a + b + c <= d:
-                    # want all none duplicates in [b, c]
+                    # want all none duplicated combinations in [b, c]
                     all_pairs = [(a, comb[0], comb[1])for comb in combinations(
                         set(num[b_index:c_index+1]), 2)]  # set prevents dups
                     ans += all_pairs  # += concatinate lists to one list
@@ -1363,31 +1525,25 @@ class Array:
 
     def get_products(self, numbers):
         """Find products of numbers using comulative products
+        products[0] =     3 * 4 * 5
+        products[1] = 1     * 4 * 5
+        products[2] = 1 * 3     * 5
+
         Time: O(n)
         Space: O(n)
         """
-        if len(numbers) == 0:
-            return numbers
-        # what about len(numbers) == 1?
-        if len(numbers) == 1:
+        if not numbers or len(numbers) == 1:  # ask for len == 1
             return None
 
-        # products[0] =     3 * 4 * 5
-        # products[1] = 1     * 4 * 5
-        # products[2] = 1 * 3     * 5
         products_before = [0] * len(numbers)
         for i, number in enumerate(numbers):
-            if i == 0:
-                products_before[i] = number
-            else:
-                products_before[i] = number * products_before[i - 1]
+            products_before[i] = number*products_before[i-1] \
+                if i > 0 else number
 
         products_after = [0] * len(numbers)
         for i, number in enumerate(reversed(numbers)):
-            if i == 0:
-                products_after[-1 - i] = number
-            else:
-                products_after[-1 - i] = number * products_after[-i]
+            products_after[-1-i] = numbers*products_after[-i] \
+                if i > 0 else number
 
         products = [0] * len(numbers)
         for i, (product_before, product_after) in enumerate(
@@ -1397,7 +1553,7 @@ class Array:
             elif i == len(products_before) - 1:
                 products[i] = products_before[-2]
             else:
-                products[i] = products_before[i - 1] * products_after[i + 1]
+                products[i] = products_before[i-1] * products_after[i+1]
         return products
 
     def merge_sort(self, lists):
@@ -1405,17 +1561,21 @@ class Array:
         Time: O(n log k), k is the heap size
         Space: O(k)
         """
+        from heapq import heappush
+        from heapq import heappop
+
         min_heap = list()
-        # initialize min heap
+        # initialize min heap with the first element of each list
         for i, x in enumerate(lists):
-            heapq.heappush(min_heap, (x.pop(0), i))
+            heappush(min_heap, (x.pop(0), i))
 
         sorted_list = list()
         while min_heap:
-            value, index = heapq.heappop(min_heap)
+            value, list_index = heappop(min_heap)
             sorted_list.append(value)
-            if lists[index]:
-                heapq.heappush(min_heap, (lists[index].pop(0), index))
+            if lists[list_index]:
+                heappush(min_heap,
+                         (lists[list_index].pop(0), list_index))
 
         return sorted_list
 
@@ -1423,19 +1583,19 @@ class Array:
     def common_elements1(self, A, B):
         """Common elements of two array. Based on A binary search B
         Time: O(m log n) for m << n.
-        Space: O(log n)
+        Space: O(1)
         """
         def has_key_bs(self, items, key):
-            if len(items) == 0:
+            if not items:
                 return False
 
-            mid = len(items) / 2
-            if items[mid] == key:
+            middle = len(items) / 2
+            if items[middle] == key:
                 ret = True
-            elif items[mid] < key:
-                ret = self.has_key_bs(items[mid+1:], key)
+            elif items[middle] < key:
+                ret = self.has_key_bs(items[middle+1:], key)
             else:
-                ret = self.has_key_bs(items[:mid], key)
+                ret = self.has_key_bs(items[:middle], key)
             return ret
 
         common = list()
@@ -1470,28 +1630,31 @@ class Array:
         Space: O(k)
         Corner: len(A) < k
         """
-        if len(A) == 0:
+        from heapq import heapify
+        from heapq import heappushpop
+        from heapq import heappop
+
+        if not A:
             return None
 
         # recruiting
         min_heap = A[:min(len(A), k)]
-        heapq.heapify(min_heap)
+        heapify(min_heap)
 
         # rank
         for i in range(len(A)):
-            if i + k < len(A):
-                A[i] = heapq.heappushpop(min_heap, A[i + k])
-            else:
-                A[i] = heapq.heappop(min_heap)
+            A[i] = heappushpop(min_heap, A[i+k]) \
+                if i+k < len(A) else heappop(min_heap)
 
-    def find_snakes(self, board, target):
-        """Recursively find 4 directions
+    def snakes(self, board, target):
+        """Recursively search 4 directions
         Time: O(n^2)
-        Space: O(1)
+        Space: O(|target|)
         """
         def search(board, target, visited, i, j):
             def is_valid(board, target, visited, i, j):
-                if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]) or \
+                if i < 0 or i >= len(board) or \
+                   j < 0 or j >= len(board[0]) or \
                    (i, j) in visited:
                     return False
                 return True
@@ -1503,20 +1666,20 @@ class Array:
 
             visited.append((i, j))  # otherwise, need search the next
             found = 0
-            if is_valid(board, target[1:], visited, i, j + 1):
-                found += search(board, target[1:], visited, i, j + 1)
-            if is_valid(board, target[1:], visited, i - 1, j):
-                found += search(board, target[1:], visited, i - 1, j)
-            if is_valid(board, target[1:], visited, i + 1, j):
-                found += search(board, target[1:], visited, i + 1, j)
-            if is_valid(board, target[1:], visited, i, j - 1):
-                found += search(board, target[1:], visited, i, j - 1)
+            if is_valid(board, target[1:], visited, i, j+1):
+                found += search(board, target[1:], visited, i, j+1)
+            if is_valid(board, target[1:], visited, i-1, j):
+                found += search(board, target[1:], visited, i-1, j)
+            if is_valid(board, target[1:], visited, i+1, j):
+                found += search(board, target[1:], visited, i+1, j)
+            if is_valid(board, target[1:], visited, i, j-1):
+                found += search(board, target[1:], visited, i, j-1)
             return found
 
         found = 0
         for i in range(len(board)):
             for j in range(len(board[0])):
-                visited = list()
+                visited = list()  # each time needs a new copy
                 found += search(board, target, visited, i, j)
         return found
 
@@ -1525,8 +1688,9 @@ class Array:
         Time: O(n log n)
         Space: O(1)
         """
-        MIN = -100000
+        MIN = float('-inf')
 
+        # sort based on the upper intervals
         sorted_intervals = sorted(zip(lowers, uppers),
                                   key=lambda interval: interval[1])
 
@@ -1541,20 +1705,31 @@ class Array:
                 points.append(current_point)
         return points
 
-    def print_power_set(self, iterable):
+    def print_power_set1(self, iterable):
         """Get the power set using bit representation
         Time: O(2^n)
-        Space: O(2^n)
+        Space: O(1)
         """
-        import math
+        from math import log
+
         for i in range(1 << len(iterable)):
-            x = i
+            x = i  # bits representation of combination
             while x:
-                lsb = x & ~(x - 1)
-                target = int(math.log(lsb, 2))  # pick lsb
+                lsb = x & ~(x - 1)  # as reprentation of integer
+                target = int(log(lsb, 2))  # pick lsb index
                 print iterable[target],
-                x &= x - 1
+                x &= x - 1  # remove lsb
             print
+
+    def print_power_set2(self, iterable):
+        """Get the power set using bit representation
+        Time: O(2^n)
+        Space: O(1)
+        """
+        from itertools import combinations
+
+        for i in range(len(iterable) + 1):  # include empty set
+            print [comb for comb in combinations(iterable, i)]
 
     def generate_random_not_from_set(self, n, m, black):
         """Generate N random numbers from 0 to M not in black list
@@ -1562,32 +1737,117 @@ class Array:
         Space: O(1)
         """
         from random import randint
+
         white = [x for x in range(m) if x not in black]
-        while n:
-            i = randint(0, len(white) - 1)
-            yield white[i]
-            n -= 1
+        if white:
+            while n:
+                i = randint(0, len(white) - 1)
+                yield white[i]
+                n -= 1
+
+    def maxPoints(self, points):
+        """Compute all possible slopes for points
+        Time: O(n^2)
+        Space: O(k)
+        Corner: 0 and 1 point, duplicated points
+        """
+        if len(points) < 2:
+            return len(points) or 0  # no line
+
+        max_points = 0
+        for start in points:
+            lines = dict()
+            duplicates = 1
+            for end in points:
+                if start is end:
+                    continue
+
+                if start.x == end.x and start.y == end.y:
+                    duplicates += 1  # no slope
+                else:
+                    if start.x == end.x:  # vertical
+                        lines['vertical'] = lines.get('vertical', 0) + 1
+                    elif start.y == end.y:
+                        lines['horizontal'] = lines.get('horizontal', 0) + 1
+                    else:
+                        slope = 1.0*(end.y-start.y)/(end.x-start.x)
+                        lines[slope] = lines.get(slope, 0) + 1
+
+            if lines:
+                max_points = max(max_points, max(lines.values())+duplicates)
+            else:
+                max_points = max(max_points, duplicates)
+        return max_points
+
+    def next_int(self, number):
+        # reversed to processing order
+        number = list(str(number))[::-1]  # each element is a string
+
+        # find the positions for swap
+        for i, n in enumerate(number):
+            if i > 0 and number[i] < number[i - 1]:
+                break
+        swap_front = i
+
+        for i, n in enumerate(number):
+            if n > number[swap_front]:
+                break
+        if n <= number[swap_front]:
+            return None
+        swap_end = i
+
+        # swap the positions
+        number[swap_front], number[swap_end] = \
+            number[swap_end], number[swap_front]
+
+        # reorder the rest
+        number[:swap_front-1] = sorted(number[:swap_front-1], reverse=True)
+
+        # formating
+        return ''.join(number[::-1])
 
 
 class DynamicProgramming:
-    def knapsack(self, items, capacity):
+    def knapsack1(self, items, capacity):
         """Solve pseudo-polynomial by DP
         Time: O(nw), n is number of items, w is the sum of the weights
         Space: O(w)
         """
         #sum(weight for i, (value, weight) in enumerate(items))
-        values = [0] * (capacity + 1)
+        values = [0] * (capacity + 1)  # make indices clear
         for (value, weight) in items:
-            print values, value, weight
             curr = capacity
-            while curr - weight >= 0:
-                values[curr] = max(values[curr],
-                                   values[curr - weight] + value)
-                curr -= 1
+            while curr - weight >= 0:  # if you have choices
+                values[curr] = max(values[curr],  # not take gain capacity
+                                   values[curr - weight] + value)  # take
+                curr -= 1  # eumerate all possible given this item
         return values[capacity]
 
+    def knapsack2(self, items, capacity):
+        # Return the value of the most valuable subsequence of the first i
+        # elements in items whose weights sum to no more than j.
+        #@memoized
+        def best_value(i, j, items):
+            if i == 0:
+                return 0
+            value, weight = items[i - 1]
+            if weight > j:
+                return best_value(i - 1, j, items)
+            else:
+                return max(best_value(i - 1, j, items),
+                           best_value(i - 1, j - weight, items) + value)
+
+        j = capacity
+        result = list()
+        for i in range(len(items), 0, -1):
+            if best_value(i, j, items) != best_value(i - 1, j, items):
+                result.append(items[i - 1])
+                j -= items[i - 1][1]
+        result.reverse()
+        return best_value(len(items), capacity, items)
+
     def longestConsecutive(self, num):
-        """Hash table keep the longest.
+        """Hash table keep the longest length.
         If the key is a lower interval, than the value is the upper.
         If the key is an upper interval, than the value is the lower.
         (two directions counts)
@@ -1595,7 +1855,7 @@ class DynamicProgramming:
         Space: O(k)
         Corner: len(num) == 0
         """
-        if len(num) == 0:
+        if not num:
             return None
 
         intervals = dict()
@@ -1619,8 +1879,8 @@ class DynamicProgramming:
         Space: O(n)
         Conner: grid is empty
         """
-        if len(grid) == 0 or len(grid[0]) == 0:
-            return grid
+        if not grid or not grid[0]:
+            return None
 
         total = 0
         path_sum = [0] * len(grid[0])
@@ -1655,7 +1915,9 @@ class DynamicProgramming:
         for x in A[1:]:
             min_now = min(min(pre_min*x, pre_max*x), x)
             max_now = max(max(pre_min*x, pre_max*x), x)
+
             max_so_far = max(max_so_far, max_now)
+
             pre_min = min_now
             pre_max = max_now
 
@@ -1663,70 +1925,98 @@ class DynamicProgramming:
 
 
 class Recursive:
+    def make_changes(self, n, coin=25):
+        """Recursive make changes for n amount using m coins
+        Time: O(nm)
+        Space: O(m)
+        """
+        # $100 -> n=100, coin=25
+        # make_changes(100, 0)+make_changes(75, 0)+...+make_changes(25, 0)+1
+        ways = 0
+        if coin == 25:
+            next_coin = 10
+        elif coin == 10:
+            next_coin = 5
+        elif coin == 5:
+            next_coin = 1
+        elif coin == 1:
+            return 1
+
+        ways, coin_num = 0, 0
+        while coin_num * coin <= n:
+            ways += self.make_changes(n - coin_num * coin, next_coin)
+            coin_num += 1
+        return ways
+
     # 8 Queens
     BOARD_SIZE = 8
+    board = [0] * BOARD_SIZE
 
-    def under_attack(self, col, queens):
-        left = right = col
+    def check_queens(self, row):
+        for x in range(row):
+            diff = abs(self.board[row] - self.board[x])
+            if diff == 0 or diff == row - x:
+                return False
+        return True
 
-        for r, c in reversed(queens):
-            left, right = left - 1, right + 1
+    def put_queen(self, row):
+        if row == 8:
+            #print self.board
+            return 1
 
-            if c in (left, col, right):
-                return True
-        return False
+        total = 0
+        for x in range(8):
+            self.board[row] = x  # generate 8 branchs when row=0
+            if self.check_queens(row):
+                total += self.put_queen(row + 1)
+        return total
 
-    def solve(self, n):
+    def generateParenthesis(self, n):
         if n == 0:
-            return [[]]
+            return []
+        if n == 1:
+            return ['()']
 
-        smaller_solutions = self.solve(n - 1)
+        ans = list()
+        parenthesis = self.generateParenthesis(n - 1)
+        for each in parenthesis:
+            ans.append(each + '()')  # aside
 
-        return [solution + [(n, i+1)]
-                for i in xrange(self.BOARD_SIZE)
-                for solution in smaller_solutions
-                if not self.under_attack(i+1, solution)]
-    # board = [0] * 8
+            each_list = list(each)  # inside in each
+            for i, one_side in enumerate(each_list):
+                if one_side == '(':
+                    ans.append(''.join(each_list.insert(i, '()')))
 
-    # def check_queens(self, row):
-    #     for x in range(row):
-    #         diff = abs(self.board[row] - self.board[x])
-    #         if diff == 0 or diff == row - x:
-    #             return False
-    #     return True
-
-    # def put_queen(self, row):
-    #     if row == 8:
-    #         #print self.board
-    #         return 1
-
-    #     total = 0
-    #     for x in range(8):
-    #         self.board[row] = x  # generate 8 branchs when row=0
-    #         if self.check_queens(row):
-    #             total += self.put_queen(row + 1)
-    #     return total
+        return ans
 
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.args = ([['S', 'N', 'A'], ['S', 'E', 'K']], 'SNAKES')
+        board = [['S', 'N', 'B', 'S', 'N'],
+                 ['B', 'A', 'K', 'E', 'A'],
+                 ['B', 'K', 'B', 'B', 'K'],
+                 ['S', 'E', 'B', 'S', 'E']]
+        self.args = (board, 'SNAKES')
 
     def tearDown(self):
         self.args = None
 
-    def test_find_snake(self):
-        expected = 1
-        result = Array().find_snakes(*self.args)
+    def test_snake(self):
+        expected = 3
+        result = Array().snakes(*self.args)
         self.assertEqual(expected, result)
+
+
+class Point:
+    def __init__(self, a=0, b=0):
+        self.x = a
+        self.y = b
 
 
 if __name__ == "__main__":
     # Unit Test
     # suite = unittest.TestLoader().loadTestsFromTestCase(Test)
     # unittest.TextTestRunner(verbosity=2).run(suite)
-    # print Array().find_median([1, 1, 2, 3, 5])
-    #print Array().find_median([2, 3, 5, 1, 1])
-    # print Array().find_kth_small([2, 3, 5, 1, 1], 3)
-    # print Array().find_median([2, 3, 5, 1, 1])
-    print Array().rearrange([2, 1, 2])
+
+    Recursive().generateParenthesis(3)
+

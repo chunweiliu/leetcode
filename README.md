@@ -1,5 +1,7 @@
-# LeetCode OJ Practice
+# LeetCode OJ Problems
 
 ## Log
-* 07/01/2014 Project start, practiced binary tree, peeked the answer of maxDepth and figured out I was so close to the answer. Feel bad about this.
-* 09/05/2014 Restart the project, aim for an internship!
+* 07/01/2014 Project start.
+* 09/05/2014 Restart the project. Aim for an internship!
+* 10/13/2014 Finish the first interview. Keep practicing!
+

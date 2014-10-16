@@ -1,38 +1,35 @@
 # Definition for a  binary tree node
-class TreeNode:
-    def __init__(self, x, left=None, right=None):
-        self.val = x
-        self.left = left
-        self.right = right
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
 
 
 class Solution:
     # @param root, a tree node
     # @return a list of lists of integers
     def levelOrder(self, root):
-        # trivial case
-        if root is None:
-            return list()  # None: WA, root: WA
+        """Binary tree level order traversal using stack
+        Time: O(n)
+        Space: O(n)
+        """
+        if not root:
+            return []  # This should be awared!
 
-        ret = list()
-        this_level = [root]
+        level_order = list()
+
+        this_level = list()
+        this_level.append(root)
         while this_level:
+            level_order.append([x.val for x in this_level])
+
             next_level = list()
-            this_level_val = list()
-            for x in this_level:
-                if x is not None:
-                    this_level_val.append(x.val)
-                if x.left is not None:
-                    next_level.append(x.left)
-                if x.right is not None:
-                    next_level.append(x.right)
-            ret.append(this_level_val)
+            for node in this_level:
+                if node.left:
+                    next_level.append(node.left)
+                if node.right:
+                    next_level.append(node.right)
             this_level = next_level
 
-        return ret
-
-
-if __name__ == "__main__":
-    tree = None
-    #tree = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
-    print Solution().levelOrder(tree)
+        return level_order

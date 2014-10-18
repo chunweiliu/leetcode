@@ -1,35 +1,40 @@
-# 1, 11, 21, 1211, 111221, 312211
-
-
 class Solution:
     # @return a string
     def countAndSay(self, n):
+        """Sequence of
+        1, 11, 21, 1211, 111221, 312211, ...
+        """
+        def count(numbers):
+            out = list()
+
+            if len(num) == 1:
+                return [1, 1]
+
+            count = 1
+            digit = numbers[0]
+            for i in range(1, len(numbers)):
+                if numbers[i] == digit:  # how about equal in the end?
+                    count += 1
+                else:
+                    out.append(count)
+                    out.append(digit)
+                    count = 1
+                    digit = numbers[i]
+
+            out.append(count)
+            out.append(digit)
+            return out
+
+        if n < 1:
+            return None
+        if n == 1:
+            return '1'
+
         num = [1]
         while n > 1:
-            num = self.count(num)
+            num = count(num)
             n -= 1
-        strnum = ''.join(map(str, num))
-        return strnum
-
-    def count(self, num):
-        out = list()
-        if len(num) == 1:
-            out = [1, 1]
-        else:
-            d = num[0]
-            c = 1
-            for x in range(1, len(num)):
-                if num[x] == d:
-                    c += 1
-                else:
-                    out.append(c)
-                    out.append(d)
-                    c = 1
-                    d = num[x]
-            out.append(c)
-            out.append(d)
-
-        return out
+        return ''.join(map(str, num))
 
 if __name__ == "__main__":
-    print Solution().countAndSay(3)
+    print Solution().countAndSay(4)

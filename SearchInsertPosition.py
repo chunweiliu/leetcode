@@ -3,20 +3,22 @@ class Solution:
     # @param target, an integer to be inserted
     # @return integer
     def searchInsert(self, A, target):
-        # trivial case
-        if target < min(A):
-            return 0
-        if target > max(A):
-            return len(A)
+        """Binary search and record a candidate
+        Time: O(log n)
+        Space: O(1)
+        """
+        if not A:
+            return None
 
-        # x in the middle
-        for x in range(len(A)):
-            if target == A[x]:
-                return x
-            elif target > A[x] and target < A[x + 1]:
-                return x + 1
-
-if __name__ == "__main__":
-    A = [1, 3, 5, 6]
-    target = 0
-    print Solution().searchInsert(A, target)
+        candidate = 0
+        start, end = 0, len(A) - 1
+        while start <= end:
+            middle = (start + end) / 2
+            if A[middle] == target:
+                return middle
+            elif A[middle] < target:
+                start = middle + 1
+                candidate = start
+            else:
+                end = middle - 1
+        return candidate

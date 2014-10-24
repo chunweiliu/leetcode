@@ -1979,14 +1979,20 @@ class Recursive:
 
         ans = list()
         parenthesis = self.generateParenthesis(n - 1)
-        for each in parenthesis:
-            ans.append(each + '()')  # aside
 
+        # for each (), insert another () in it
+        for each in parenthesis:
             each_list = list(each)  # inside in each
             for i, one_side in enumerate(each_list):
-                if one_side == '(':
-                    ans.append(''.join(each_list.insert(i, '()')))
+                if i < len(each_list) and \
+                   one_side == '(' and each_list[i+1] == ')':
+                    copy = list(each_list)
+                    copy.insert(i+1, '()')
+                    ans.append(''.join(copy))
 
+        # insert a () aside the current solution
+        ans.append('()'*n)
+        ans.append('('+'()'*(n-1)+')')
         return ans
 
 
@@ -2018,5 +2024,4 @@ if __name__ == "__main__":
     # suite = unittest.TestLoader().loadTestsFromTestCase(Test)
     # unittest.TextTestRunner(verbosity=2).run(suite)
 
-    Recursive().generateParenthesis(3)
-
+    print Recursive().generateParenthesis(3)

@@ -22,10 +22,11 @@ class Solution:
         # return ret
 
         # 2)
-        sequence = collections.defaultdict(int)
+        sequence = collections.defaultdict(int)  # intial value 0
         for i in range(len(s)):
             sequence[s[i:i+10]] += 1
         return [key for key, value in sequence.iteritems() if value > 1]
+
 
 class Test(unittest.TestCase):
     def test_case1(self):

@@ -11,7 +11,7 @@ class Solution:
          - can do inplace
         2) looping with module index, Space: O(n)
         3) swaping, Space: O(1) -> (X)
-        4) three-time reversing
+        4) #three-time-reversing
         """
         k = k % len(nums)
 

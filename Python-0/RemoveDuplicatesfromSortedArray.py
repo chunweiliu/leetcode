@@ -13,5 +13,6 @@ class Solution:
         return len(A) - padding
 
 if __name__ == "__main__":
-    A = [0, 0, 0, 1, 2, 3, 4]
+    A = [0, 0, 0, 1, 2, 2, 3, 4]
     print Solution().removeDuplicates(A)
+    print A

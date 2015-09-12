@@ -6,6 +6,10 @@
 * Handle boundary cases first
 * Make sure the code is complete all the time. (Using pass if you plan to finish the spinet later)
 
+# Incomplete
+* 037-SudokySolver.py
+* 
+
 ## Log
 * 07/01/2014 Project start.
 * 09/05/2014 Restart the project. Aim for an internship!

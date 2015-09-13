@@ -11,8 +11,8 @@ class Solution(object):
         current_sum = 0
         for num in nums:
             current_sum += num
-            current_sum = max(0, current_sum)  # Get rid off the negative sum.
             maximum_sum = max(current_sum, maximum_sum)
+            current_sum = max(0, current_sum)  # Get rid off the negative sum.
         return maximum_sum
 
 if __name__ == '__main__':

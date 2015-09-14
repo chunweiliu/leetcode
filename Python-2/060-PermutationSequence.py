@@ -1,6 +1,7 @@
 import math
 import unittest
 
+
 class Solution(object):
     def getPermutation(self, n, k):
         """
@@ -29,18 +30,19 @@ class Solution(object):
         digits = map(str, range(1, n + 1))
         k -= 1
         while n > 0:
-            number_of_each_group = math.factorial(n - 1)
-            i = k // number_of_each_group
-            ans += digits.pop(i)
-            k -= (i + 1) * number_of_each_group
             n -= 1
+            number_of_each_group = math.factorial(n)
+
+            index, k = divmod(k, number_of_each_group)
+            ans += digits.pop(index)
+            # k -= i * number_of_each_group  # Equal to modualization.
         return ''.join(ans)
 
 
 class Test(unittest.TestCase):
     def test_case(self):
-        n = 3
-        k = 2
+        n = 4
+        k = 10
         from itertools import permutations
         expected = ''.join(map(str,
                                list(permutations(range(1, n + 1)))[k - 1]))

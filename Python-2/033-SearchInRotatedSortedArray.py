@@ -15,7 +15,7 @@ class Solution(object):
 
             # Aware the corner case: When m == i, we can't advance i without =.
             # Think about the case [3, 1], target 1. What's the reason behind?
-            if nums[i] < nums[m]:  # MUST USE '='.
+            if nums[i] <= nums[m]:  # MUST USE '='.
                 if nums[i] <= target < nums[m]:
                     j = m - 1
                 else:

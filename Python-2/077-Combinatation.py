@@ -32,10 +32,14 @@ class Solution(object):
         # An visualization of the call stack.
         result = []
         for i in range(1, n + 1):
+            # Pick i and compute the possible combination before i.
             # print 'i = %d, call combine(%d, %d)' % (i, i - 1, k - 1)
+
             for prev in self.combine(i - 1, k - 1):
                 # The combine function has to reach to k == 0 to return an
-                # "indentity element", which is a [[]], for entering this block
+                # "indentity element", which is [[]], for entering this block.
+                # So k determines how deep the combine function can go through,
+                # and also how many elements can be appended to the list.
                 result.append(prev + [i])
 
                 # print 'in combine(%d, %d)' % (i - 1, k - 1)

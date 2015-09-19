@@ -26,20 +26,23 @@ class Solution(object):
         if k == 0:
             return [[]]
 
-        return [prev + [i] for i in range(1, n + 1)
-                for prev in self.combine(i - 1, k - 1)]
+        # return [prev + [i] for i in range(1, n + 1)
+        #         for prev in self.combine(i - 1, k - 1)]
 
         # An visualization of the call stack.
-        # result = []
-        # for i in range(1, n + 1):
-        #     print 'i = %d, call combine(%d, %d, %d)' % (i, i - 1, k - 1, s)
-        #     for prev in self.combine(i - 1, k - 1, s + 1):
-        #         print 'in combine(%d, %d, %d)' % (i - 1, k - 1, s)
-        #         result.append(prev + [i])
-        #         print 'result: ', result
-        # return result
+        result = []
+        for i in range(1, n + 1):
+            # print 'i = %d, call combine(%d, %d)' % (i, i - 1, k - 1)
+            for prev in self.combine(i - 1, k - 1):
+                # The combine function has to reach to k == 0 to return an
+                # "indentity element", which is a [[]], for entering this block
+                result.append(prev + [i])
+
+                # print 'in combine(%d, %d)' % (i - 1, k - 1)
+                # print 'result: ', result
+        return result
 
 
 if __name__ == '__main__':
-    n, k = 4, 4
+    n, k = 4, 1
     print Solution().combine(n, k)

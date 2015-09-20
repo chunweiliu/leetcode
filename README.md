@@ -8,7 +8,6 @@
 
 # Incomplete
 * 037-SudokySolver.py
-* 
 
 ## Log
 * 07/01/2014 Project start.

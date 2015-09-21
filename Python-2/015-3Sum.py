@@ -49,4 +49,4 @@ class Solution(object):
 
 if __name__ == "__main__":
     nums = [-2, 0, 1, 1, 2]
-    print Solution().threeSum(nums) == Practice().ThreeSum(nums)
+    print Solution().threeSum(nums)

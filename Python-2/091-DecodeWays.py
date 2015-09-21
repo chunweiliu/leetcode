@@ -8,8 +8,8 @@ class Solution(object):
         # 'B' -> 2 ...
         # 'Z' -> 26
         # DP, Similar to Climbing Stairs
-        # Count[i] = Count[i - 1]
-        #          | Count[i - 1] + Count[i - 2], if s[i - 2: i - 1] is vaild.
+        # Count[i] = Count[i - 1] + Count[i - 2], if s[i - 2: i - 1] is vaild.
+        #          = Count[i - 1] Otherwise, if s[i - 1] is vaild.
 
         prev_ways = 0
         curr_ways = int(s > '')  # If no input, return this value without loop.

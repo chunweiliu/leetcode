@@ -12,45 +12,40 @@ class Solution(object):
         :type k: int
         :rtype: ListNode
         """
-        # Check if we need to reverse by advancing the tail k-times.
-        # 1 -> 2 -> 3 -> 4 -> 5, k = 3
-        # head           tail
-        # 1 -> 2 -> 3 -> None, k = 3 (conner case)
-        # head           tail
-        tail = head
-        count = 0
-        while count < k:
-            if tail:
-                tail = tail.next
-            else:
-                break
-            count += 1
-        if count != k:
+        # Check if the list need to be reversed.
+        if not head or k <= 1:
             return head
 
-        # Reverse the k nodes in the front.
-        # None 1 -> 2 -> 3 -> 4 -> 5, before loop
-        # prev curr
-        # None<1    2 -> 3 -> 4 -> 5, after _ = 0
-        #      prev curr next
-        # None<1 <- 2 -> 3 -> 4 -> 5, after _ = 1
-        #           prev curr next
-        # None<1 <- 2 <- 3    4 -> 5, after _ = 2
-        #                prev curr next
-        previous_node, current_node = None, head
-        for _ in range(k):
-            next_node = current_node.next
-            current_node.next = previous_node
-            previous_node = current_node
-            current_node = next_node
+        # Check if the list is long enough to be reversed.
+        curr, n = head, 0
+        while curr and n < k:
+            curr = curr.next
+            n += 1
+        if n < k:
+            return head
 
-        # Connect this k-group to the next.
-        # v----1 <- 2 <- 3    4 -> 5
-        # --------------------^
-        head.next = self.reverseKGroup(tail, k) if tail else None
+        # Reverse the first k nodes (k and the lenght of list are at least 2)
+        # ^---------v
+        # 0    1 <- 2    3
+        #      v---------^
+        # prev last curr
+        dummy = ListNode(0)
+        dummy.next = head
+        prev = dummy
+        last = prev.next
+        curr = last.next
 
-        return previous_node
+        n = 0
+        while last and n < k - 1:  # k - 1, two nodes only need one reverse.
+            last.next = curr.next
+            curr.next = prev.next
+            prev.next = curr
+            curr = last.next
+            n += 1
 
+        # Recursively do for the next group.
+        last.next = self.reverseKGroup(last.next, k)
+        return dummy.next
 
 if __name__ == '__main__':
     # head = ListNode(1, ListNode(2, ListNode(3, ListNode(4, ListNode(5)))))

@@ -14,25 +14,26 @@ class Solution(object):
                           self.find_kth(nums1, nums2, total / 2 + 1))
 
     def find_kth(self, nums1, nums2, k):
-        # The stop conditions for the recursion
+        # The stop conditions for the recursion. Assume nums1 is always larger
+        # than nums2, so we only need to worry one array might be empty.
         if len(nums1) < len(nums2):
             return self.find_kth(nums2, nums1, k)
         if len(nums2) == 0:
             return nums1[k - 1]
         if k == 1:
             return min(nums1[0], nums2[0])
+
         # Eleminate the impossible part of the array by testing two elements
         # nums1[n - 1] and nums2[m - 1]. If nums1[n - 1] is smaller than the
         # other, means the 1th to the Nth elements of nums1 are impossible for
         # containing the solution, which has to be the Kth element (K > N).
-        m = min(k / 2, len(nums2))
-        n = k - m
-        if nums1[n - 1] < nums2[m - 1]:
-            return self.find_kth(nums1[n:], nums2, k - n)
-        return self.find_kth(nums1, nums2[m:], k - m)
+        n = min(k / 2, len(nums2))
+        m = k - n
+        if nums1[m - 1] < nums2[n - 1]:
+            return self.find_kth(nums1[m:], nums2, k - m)
+        return self.find_kth(nums1, nums2[n:], k - n)
 
 if __name__ == "__main__":
     nums1 = [1, 2, 3, 4]
     nums2 = [5]
     print Solution().findMedianSortedArrays(nums1, nums2)
-

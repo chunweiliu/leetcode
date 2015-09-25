@@ -24,7 +24,7 @@ class Solution(object):
         while fast.next:
             fast = fast.next
             slow = slow.next
-        slow.next = slow.next.next  # Not fast!
+        slow.next = slow.next.next  # Remove the node next to slow.
         return head
 
 if __name__ == "__main__":

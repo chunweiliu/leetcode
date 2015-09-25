@@ -11,6 +11,7 @@ class Solution(object):
         :type head: ListNode
         :rtype: ListNode
         """
+        # Leave only distinct numbers from the original list.
         dummy = prev = ListNode(0)
         dummy.next = head
         while head and head.next:

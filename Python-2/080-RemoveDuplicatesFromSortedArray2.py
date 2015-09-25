@@ -5,10 +5,9 @@ class Solution(object):
         :rtype: int
         """
         # Duplicates are allowed at most twice.
-        # Loop through the numbers and include those in the result haven't been
-        # include twice already.
-        # 1) Why check nums[i - ALLOWED_DUPLICATE]?
-        # 2) Why nums[i] is always less than n, otherwise it is a duplicate?
+        # Assume the array elements preivous than i are fully took care of:
+        # 1 1 2 2 2 2 2 2 ... 2 2 2 2 3
+        #         i  wait until n hit ^
         ALLOWED_DUPLICATE = 2
 
         i = 0

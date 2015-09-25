@@ -5,6 +5,9 @@ class Solution(object):
         :rtype: bool
         """
         # If a number has any prime factor other than 2, 3, 5, it's a ugly one.
+        if num == 0:
+            return False
+
         prime_factors = [2, 3, 5]
         for prime_factor in prime_factors:
             while num % prime_factor == 0:

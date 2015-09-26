@@ -4,32 +4,32 @@ class Solution(object):
         :type nums: List[int]
         :rtype: void Do not return anything, modify nums in-place instead.
         """
-        # Find the pivot (largest number in accending order in backward).
-        # 6 8 7 4 3 2
-        # p
+        # The last statement to be excuted, the faster the time would be.
+
+        # Find the first none increasing number from left
         i = len(nums) - 1
-        while i > 0 and nums[i - 1] >= nums[i]:
+        while i >= 1 and nums[i - 1] >= nums[i]:
             i -= 1
-        if i == 0:
-            # Decending all the way, like 3, 2, 1, 1
+        i -= 1  # i either is the answer or -1
+
+        # Decreasing all the way down. No swap need.
+        if i == -1:
             nums.reverse()
             return
-        pivot = i - 1
 
-        # Find the smallest larger number to swap with the pivot.
-        # 6 8 7 4 3 2
-        # p   i
-        i = len(nums) - 1
-        while i > 0 and nums[i] <= nums[pivot]:
-            i -= 1
-        nums[pivot], nums[i] = nums[i], nums[pivot]
+        # Find the first number larger than the pivot from left
+        j = len(nums) - 1
+        while j >= 0 and nums[j] <= nums[i]:
+            j -= 1
 
-        # Reorder the numbers after the pivot for a mimimum increasing.
-        # 7 2 3 4 6 8
-        nums[pivot + 1:] = reversed(nums[pivot + 1:])
+        # Swap i, j
+        nums[i], nums[j] = nums[j], nums[i]
+
+        # Revserse the number after i
+        nums[i+1:] = reversed(nums[i+1:])
 
 if __name__ == '__main__':
-    nums = [1, 3, 2]
+    nums = [1]
     print nums
     Solution().nextPermutation(nums)
     print nums

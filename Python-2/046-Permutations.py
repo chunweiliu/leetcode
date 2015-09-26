@@ -4,6 +4,19 @@ class Solution(object):
         :type nums: List[int]
         :rtype: List[List[int]]
         """
+        if not nums:
+            return [[]]
+
+        ans = []
+        for i, n in enumerate(nums):
+            for p in self.permute(nums[:i] + nums[i+1:]):
+                ans.append([n] + p)
+        return ans
+
+        # return [[n] + p
+        #         for i, n in enumerate(nums)
+        #         for p in self.permute(nums[:i] + nums[i+1:])] or [[]]
+
         # # Generate permutation indices
         # if len(nums) == 0:
         #     return [[]]
@@ -24,9 +37,9 @@ class Solution(object):
         # function e.g lambda x + y: The left argument, x, is the accumulated
         # val. and the right argument, y, is the update val. from the iter.
         # [] -> list, () -> generator        
-        return reduce(lambda pp, n: [p[:i] + [n] + p[i:]
-                                     for p in pp for i in range(len(p) + 1)],
-                      nums, [[]])
+        # return reduce(lambda pp, n: [p[:i] + [n] + p[i:]
+        #                              for p in pp for i in range(len(p) + 1)],
+        #               nums, [[]])
 
 if __name__ == '__main__':
     nums = [0, 1, 2]

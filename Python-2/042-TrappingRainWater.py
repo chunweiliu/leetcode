@@ -18,6 +18,11 @@ class Solution(object):
             else:
                 lower = height[j]
                 j -= 1
+            # The level is always gather from lower.
             level = max(level, lower)
             water += level - lower
         return water
+
+if __name__ == '__main__':
+    height = [0, 1, 10, 0, 10, 100, 0]
+    print Solution().trap(height)

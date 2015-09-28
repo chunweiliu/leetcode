@@ -26,8 +26,10 @@ class Solution(object):
         candidate = intervals[0]
         for i in range(1, len(intervals)):
             if candidate.start <= intervals[i].start <= candidate.end:
+                # Merge the overlap intervals.
                 candidate.end = max(intervals[i].end, candidate.end)
             else:
+                # Insert new candidate.
                 ans.append(candidate)
                 candidate = intervals[i]
         ans.append(candidate)

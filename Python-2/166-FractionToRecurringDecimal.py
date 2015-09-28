@@ -11,17 +11,17 @@ class Solution(object):
         if numerator * denominator < 0:
             return '-'+self.fractionToDecimal(abs(numerator), abs(denominator))
 
-        # Get the quotient
+        # Get the quotient.
         num = str(numerator / denominator)
 
-        # Get the residual
+        # Get the residual.
         residual = numerator % denominator
         if residual == 0:
             return num
         else:
             num += '.'
 
-        # Process residual
+        # Process the residual.
         existed_position = {}
         while residual:
             if residual in existed_position:

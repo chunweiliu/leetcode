@@ -1,3 +1,7 @@
+from timeit import Timer
+import timeit
+
+
 class Solution(object):
     def myPow(self, x, n):
         """
@@ -5,29 +9,11 @@ class Solution(object):
         :type n: int
         :rtype: float
         """
-        # return x ** n
-
-        # Might cause stack overflow
-        # if n == 1:
-        #     return x
-        # return n * self.myPow(x, n - 1)
-
         if n < 0:
-            return 1 / self.pow(x, -n)
-        return self.pow(x, n)
+            return 1 / self.pow1(x, -n)
+        return self.pow1(x, n)
 
-    # def divided_pow(self, x, n):
-    #     # Assume n is non-negative
-    #     # This is still slow, because it creates duplicate trees.
-    #     if n == 0:
-    #         return 1
-    #     if n == 1:
-    #         return x
-    #     if n % 2 == 0:
-    #         return self.divided_pow(x, n // 2) * self.divided_pow(x, n // 2)
-    #     return x * self.divided_pow(x, n // 2) * self.divided_pow(x, n // 2)
-
-    def pow(self, x, n):
+    def pow1(self, x, n):
         # 8 = 1 0 0 0
         d = x
         ans = 1
@@ -38,7 +24,34 @@ class Solution(object):
             n >>= 1
         return ans
 
+    def pow2(self, x, n):
+        r = 1
+        factor_x = x
+        factor_c = 1
+        while n:
+            while n >= factor_c:  # [BUG] n > factor_c
+                r *= factor_x
+                n -= factor_c
+                factor_x *= factor_x
+                factor_c += factor_c
+            factor_x = x
+            factor_c = 1
+        return r
+
+
 if __name__ == '__main__':
-    x = 2.0
-    n = 4
-    print Solution().myPow(x, n)
+    x = 2
+    n = 10
+    print (Solution().myPow(x, n) == Solution().pow1(x, n) ==
+           Solution().pow2(x, n) == pow(x, n))
+
+    print(timeit.timeit("pow(2, 10)"))
+
+    t = Timer(lambda: Solution().myPow(2, 10))
+    print t.timeit()
+
+    t = Timer(lambda: Solution().pow1(2, 10))
+    print t.timeit()
+
+    t = Timer(lambda: Solution().pow2(2, 10))
+    print t.timeit()

@@ -1,37 +1,40 @@
 class Solution(object):
-    def divide(self, dividend, divisor):
+    def divide(self, n, m):
         """
-        :type dividend: int
-        :type divisor: int
+        :type dividend (n): int
+        :type divisor (m): int
         :rtype: int
         """
         # Take care of sign.
-        sign = -1 if dividend * divisor < 0 else 1
-        dividend *= -1 if dividend < 0 else 1
-        divisor *= -1 if divisor < 0 else 1
+        # Negative value
+        sign = 1
+        if n * m < 0:
+            sign = -1
+        n = abs(n)  # [BUG] cannot handle n = -1, m = -1
+        m = abs(m)
 
-        # Accumulate the divsor faster by doubling it.
-        quotient = 0
-        factor_quotient, factor_divisor = 1, divisor
+        # Zero divident
+        if m == 0:
+            return None
 
-        while factor_divisor <= dividend:
-            dividend -= factor_divisor
-            quotient += factor_quotient
-            factor_divisor += factor_divisor
-            factor_quotient += factor_quotient
-            # Reset the factor quotient for the next run
-            if dividend < factor_divisor:
-                factor_quotient, factor_divisor = 1, divisor
+        q = 0
+        factor_m = m
+        factor_c = 1
+        while n >= m:
+            while n >= factor_m:
+                n -= factor_m
+                q += factor_c
 
-        # Handle the boundary cases
-        ans = sign * quotient
-        if ans > 2 ** 31 - 1:
-            return 2 ** 31 - 1
-        if ans < - 2 ** 31:
-            return - 2 ** 31
-        return sign * quotient
+                factor_m += factor_m
+                factor_c += factor_c
+            factor_m = m
+            factor_c = 1
 
-if __name__ == '__main__':
-    dividend = -10
-    divisor = -1
-    print Solution().divide(dividend, divisor)
+        ans = sign * q
+        int_max = 2 ** 31 - 1
+        int_min = - 2 ** 31
+        if ans > int_max:
+            ans = int_max
+        if ans < int_min:
+            ans = int_min
+        return ans

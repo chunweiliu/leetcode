@@ -15,7 +15,7 @@ class Solution(object):
         if not head or k <= 1:
             return head
 
-        # Check if the list is long enough to reverse
+        # Check if the list is long enough to be reversed
         curr, n = head, 0
         while curr and n < k:
             curr = curr.next

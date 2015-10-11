@@ -44,3 +44,33 @@ class Solution(object):
 
         last.next = self.reverseKGroup(last.next, k)
         return dummy.next
+
+    def reverse_k_group_alternatively(self, head, k, advance=False):
+        if not head or k <= 1:
+            return head
+
+        # Check length and record last if need to advance
+        n = 0
+        last, curr = None, head
+        while curr and n < k:
+            last = curr
+            curr = curr.next
+            n += 1
+        if n < k:
+            return head
+
+        dummy = ListNode(0)
+        dummy.next = head
+
+        # Reverse k nodes
+        if not advance:
+            prev, last, curr = dummy, head, head.next
+            for _ in range(k - 1):
+                last.next = curr.next
+                curr.next = prev.next
+                prev.next = curr
+                curr = last.next
+
+        last.next = self.reverse_k_group_alternatively(
+            last.next, k, not advance)
+        return dummy.next

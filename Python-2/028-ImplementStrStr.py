@@ -28,7 +28,7 @@ class Solution(object):
                 i += 1
                 j += 1
             else:
-                # Go back to check
+                # Go back to check. 
                 j = index[j - 1] if j else 0
                 if j == 0:
                     index[i] = 0

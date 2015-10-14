@@ -10,7 +10,7 @@ class Solution(object):
         # DP, Similar to Climbing Stairs
         # Count[i] = Count[i - 1] + Count[i - 2], if s[i - 2: i - 1] is vaild.
         #          = Count[i - 1] Otherwise, if s[i - 1] is vaild.
-        prev, curr = 0, int(s[0] > '0')
+        prev, curr = 0, int(s > '')
         p = ''
         for d in s:
             temp = curr

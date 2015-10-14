@@ -4,28 +4,23 @@ class Solution(object):
         :type s: str
         :rtype: bool
         """
-        s = ''.join([c.lower() for c in s if c.isalnum()])
-        return s == s[::-1]
+        # s = ''.join([c.lower() for c in s if c.isalnum()])
+        # return s == s[::-1]
 
-        # TLE
-        # def check(s, l, r):
-        #     while 0 <= l and r < len(s):
-        #         if s[l] == s[r]:
-        #             l -= 1
-        #             r += 1
-        #         else:
-        #             return False
-        #     return True
-
-        # simplified_s = ''
-        # for c in s:
-        #     if c.isalpha():
-        #         simplified_s += c
-        # s = simplified_s
-        # n = len(s)
-        # if n % 2 == 1:
-        #     return check(s, n // 2, n // 2)
-        # return check(s, n // 2 - 1, n // 2)
+        i, j = 0, len(s) - 1
+        while i <= j:
+            if s[i].lower() == s[j].lower():
+                i += 1
+                j -= 1
+            elif not s[i].isalnum():
+                i += 1
+            elif not s[j].isalnum():
+                j -= 1
+            else:
+                break
+        if i > j:
+            return True
+        return False
 
 if __name__ == '__main__':
     s = '1a2'

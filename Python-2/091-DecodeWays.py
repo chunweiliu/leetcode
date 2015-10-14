@@ -10,16 +10,15 @@ class Solution(object):
         # DP, Similar to Climbing Stairs
         # Count[i] = Count[i - 1] + Count[i - 2], if s[i - 2: i - 1] is vaild.
         #          = Count[i - 1] Otherwise, if s[i - 1] is vaild.
-
-        prev_ways = 0
-        curr_ways = int(s > '')  # If no input, return this value without loop.
-        p = ''  # as previous digit
+        prev, curr = 0, int(s[0] > '0')
+        p = ''
         for d in s:
-            prev_ways, curr_ways, p = (
-                curr_ways,
-                (d > '0') * curr_ways + (9 < int(p+d) < 27) * prev_ways,
-                d)
-        return curr_ways
+            temp = curr
+            curr = curr * (d > '0') + prev * ('10' <= p+d <= '26')
+            prev = temp  # Use the non-update one as the previous one.
+            p = d
+        return curr
+
 
 if __name__ == '__main__':
     s = '111'  # AAA, AK, KA

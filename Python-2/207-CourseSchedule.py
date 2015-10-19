@@ -33,7 +33,7 @@ class Solution(object):
         for n in graph[v]:  # [BUG]
             if status[n] == self.VISITING:
                 return False
-            elif status[n] == self.TO_BE_VISITED:
+            if status[n] == self.TO_BE_VISITED:
                 no_cycle &= self.dfs_visit(n, graph, status)
         status[v] = self.DONE
         return no_cycle  # [BUG]

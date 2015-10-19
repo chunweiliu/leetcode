@@ -33,6 +33,9 @@ class Solution(object):
                 in_degree[n] -= 1
                 if in_degree[n] == 0:
                     zero_in_degree_vertexs.append(n)
+
+        # If the number of order is less than the number of course, there is
+        # a cycle in the graph.
         return order if len(order) == num_course else []
 
     def build_graph(self, num_courses, prerequisites):

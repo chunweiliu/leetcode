@@ -1040,7 +1040,7 @@ class Tree:
         Space: O(n)
         """
         def is_symmetric(left, right):
-            #Just a node comparison, but have careful order
+            # Just a node comparison, but have careful order
             if not left and not right:
                 return True
             if not left or not right:  # put or after and, avoid both None

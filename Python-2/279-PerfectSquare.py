@@ -1,5 +1,6 @@
 class Solution(object):
     def numSquares(self, n):
+        # BFS
         edges = [i * i for i in range(1, int(n ** 0.5) + 1)]
         visited = set()
         level = 0

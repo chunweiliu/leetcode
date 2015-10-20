@@ -8,6 +8,7 @@ class Solution(object):
         # 11000
         # 00100
         # 00011  return 3
+        # DFS
         if not grid:
             return 0
         m, n = len(grid), len(grid[0])

@@ -6,11 +6,11 @@ class Solution(object):
         """
         # 2 ^ 31 - 1 = 2,147,483,647
         less_than_20 = ['', 'One', 'Two', 'Three', 'Four', 'Five',
-                        'Six', 'Seven', 'Eight', 'Night', 'Ten',
-                        'Eleven', 'Twelve', 'Thirteen', 'Fouteen', 'Fifteen',
+                        'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+                        'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
                         'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen']
-        tens = ['', '', 'Tewnty', 'Thirty', 'Forty', 'Fifty',
-                'Sixty', 'Seventy', 'Eighty', 'Nighty']
+        tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty',
+                'Sixty', 'Seventy', 'Eighty', 'Ninety']
 
         def num_to_words(num):
             if num == 0:
@@ -23,7 +23,7 @@ class Solution(object):
                     words = mapping(n) + unit + ' ' + words
                 num /= 1000
 
-            return words
+            return words.rstrip(' ')
 
         def mapping(num):
             # 0 - 999

@@ -5,31 +5,25 @@ class Solution(object):
         :type target: int
         :rtype: List[int]
         """
-        return [self.left_search(nums, target),
-                self.right_search(nums, target)]
+        return [self.search_left(nums, target),
+                self.search_right(nums, target)]
 
-    def left_search(self, nums, target):
-        left_interval = -1  # [BUG] left_interval = 0
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            m = i + (j - i) / 2
-            if target <= nums[m]:
-                j = m - 1
-                if target == nums[m]:  # [BUG] N/A
-                    left_interval = m
+    def search_left(self, nums, target):
+        start, end = -1, len(nums)
+        while end - start > 1:
+            mid = (end - start) / 2 + start
+            if nums[mid] < target:  # nums[start] < target <= nums[end]
+                start = mid
             else:
-                i = m + 1
-        return left_interval
+                end = mid
+        return end if end != len(nums) and nums[end] == target else -1
 
-    def right_search(self, nums, target):
-        right_interval = -1
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            m = i + (j - i) / 2
-            if target >= nums[m]:
-                i = m + 1
-                if target == nums[m]:
-                    right_interval = m
+    def search_right(self, nums, target):
+        start, end = -1, len(nums)
+        while end - start > 1:
+            mid = (end - start) / 2 + start
+            if nums[mid] <= target:  # nums[start] <= target < nums[end]
+                start = mid
             else:
-                j = m - 1
-        return right_interval
+                end = mid
+        return start if start != -1 and nums[start] == target else -1

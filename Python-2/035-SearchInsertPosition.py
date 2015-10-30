@@ -5,26 +5,16 @@ class Solution(object):
         :type target: int
         :rtype: int
         """
-        # A modified binary search
-        insert_position = 0  # The corner case should be set as 0.
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            m = i + (j - i) / 2
-            if nums[m] == target:
-                return m
+        # Apply the framework of binary search.
+        # 1. What's the range for searching?
+        # 2. What's the loop invariant?
 
-            # How to record the index we just found before? The trick is when
-            # to update the `insert_position`. Because we are going to insert
-            # the target "after" the closest number, we only update when we
-            # find a smaller candidate. The defalut insert position is 0.
-            if nums[m] < target:
-                i = m + 1
-                insert_position = i
+        # Search [0, n - 1] -> start, end = -1, n
+        start, end = -1, len(nums)
+        while end - start > 1:
+            mid = (end - start) / 2 + start
+            if nums[mid] < target:
+                start = mid  # nums[start] < target <= nums[end]
             else:
-                j = m - 1
-        return insert_position
-
-if __name__ == '__main__':
-    nums = [0, 2]
-    target = -1
-    print Solution().searchInsert(nums, target)
+                end = mid
+        return end

@@ -5,29 +5,28 @@ class Solution(object):
         :type target: int
         :rtype: int
         """
-        # 4 5 6 7 0 1 2
-        # Divide the nums to two part, make sure which part is in order.
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            m = i + (j - i) / 2
-            if nums[m] == target:
-                return m
+        start, end = -1, len(nums)
+        while end - start > 1:
+            mid = (end - start) / 2 + start
 
-            # Aware the corner case: When m == i, we can't advance i without =.
-            # Think about the case [3, 1], target 1. What's the reason behind?
-            if nums[i] <= nums[m]:  # MUST USE '='.
-                if nums[i] <= target < nums[m]:
-                    j = m - 1
+            # This loop invariant is complicated, so we
+            # return immediately when we found the target.
+            if nums[mid] == target:
+                return mid
+
+            if nums[start + 1] <= nums[mid]:
+                if nums[start + 1] <= target <= nums[mid]:
+                    end = mid
                 else:
-                    i = m + 1
-            else:  # The post part is in order.
-                if nums[m] < target <= nums[j]:
-                    i = m + 1
+                    start = mid
+            else:
+                if nums[mid] <= target <= nums[end - 1]:
+                    start = mid
                 else:
-                    j = m - 1
+                    end = mid
         return -1
 
 if __name__ == '__main__':
-    nums = [3, 1]
+    nums = [3, 31]
     target = 1
     print Solution().search(nums, target)

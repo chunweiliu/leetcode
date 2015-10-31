@@ -9,12 +9,12 @@ class Solution(object):
         # 1. What's the range for searching?
         # 2. What's the loop invariant?
 
-        # Search [0, n - 1] -> start, end = -1, n
-        start, end = -1, len(nums)
-        while end - start > 1:
-            mid = (end - start) / 2 + start
-            if nums[mid] < target:
-                start = mid  # nums[start] < target <= nums[end]
+        # Search [0, n - 1] -> left, right = -1, n
+        left, right = -1, len(nums)
+        while right - left > 1:
+            mid = (right - left) / 2 + left
+            if nums[mid] < target:  # nums[left] < target <= nums[right]
+                left = mid
             else:
-                end = mid
-        return end
+                right = mid
+        return right

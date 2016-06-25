@@ -185,4 +185,4 @@
 |004|[median of two sorted arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)|[cc](./problems/median_of_two_sorted_arrays/median_of_two_sorted_arrays.cc) [py](./problems/median_of_two_sorted_arrays/median_of_two_sorted_arrays.py) |
 |003|[longest substring without repeating characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)|[cc](./problems/longest_substring_without_repeating_characters/longest_substring_without_repeating_characters.cc) [py](./problems/longest_substring_without_repeating_characters/longest_substring_without_repeating_characters.py) |
 |002|[add two numbers](https://leetcode.com/problems/add-two-numbers/)|[cc](./problems/add_two_numbers/add_two_numbers.cc) [py](./problems/add_two_numbers/add_two_numbers.py) |
-|001|[two sum](https://leetcode.com/problems/two-sum/)|[cc](./problems/two_sum/two_sum.cc) [py](./problems/two_sum/two_sum.py) |
+|001|[two sum](https://leetcode.com/problems/two-sum/)|[cc](./problems/two_sum/two_sum.cc) [py](./problems/two_sum/two_sum.py) [rb](./problems/two_sum/two_sum.rb) |

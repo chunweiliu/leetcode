@@ -1,5 +1,9 @@
 # How to do Leetcode
 
+## Play
+* Solve for unsolved problem in the Easy category
+* Be familiar with the syntax of the language
+
 ## Practice (repeat this for 3 months)
 * Time 30 minutes up for a new problem.
 * Write code and make it work.

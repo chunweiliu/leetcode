@@ -61,6 +61,9 @@
 |198|[house robber](https://leetcode.com/problems/house-robber/)|[py](./problems/house_robber/house_robber.py) |
 |188|[best time to buy and sell stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)|[py](./problems/best_time_to_buy_and_sell_stock/best_time_to_buy_and_sell_stock.py) |
 |173|[binary search tree iterator](https://leetcode.com/problems/binary-search-tree-iterator/)|[py](./problems/binary_search_tree_iterator/binary_search_tree_iterator.py) |
+|172|[factorial-trailing-zeroes](https://leetcode.com/problems/factorial-trailing-zeroes/)|   |
+|169|[majority-element](https://leetcode.com/problems/majority-element/)|   |
+|168|[excel-sheet-column-title](https://leetcode.com/problems/excel-sheet-column-title/)|   |
 |166|[fraction to recurring decimal](https://leetcode.com/problems/fraction-to-recurring-decimal/)|[py](./problems/fraction_to_recurring_decimal/fraction_to_recurring_decimal.py) |
 |165|[compare version numbers](https://leetcode.com/problems/compare-version-numbers/)|[py](./problems/compare_version_numbers/compare_version_numbers.py) |
 |162|[find peak element](https://leetcode.com/problems/find-peak-element/)|[py](./problems/find_peak_element/find_peak_element.py) |
@@ -84,14 +87,16 @@
 |124|[binary tree maximum path sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)|[py](./problems/binary_tree_maximum_path_sum/binary_tree_maximum_path_sum.py) |
 |123|[best time to buy and sell stock iii](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/)|[py](./problems/best_time_to_buy_and_sell_stock_iii/best_time_to_buy_and_sell_stock_iii.py) |
 |122|[best time to buy and sell stock ii](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)|[py](./problems/best_time_to_buy_and_sell_stock_ii/best_time_to_buy_and_sell_stock_ii.py) |
+|119|[pascals-triangle-ii](https://leetcode.com/problems/pascals-triangle-ii/)|   |
+|118|[pascals-triangle](https://leetcode.com/problems/pascals-triangle/)|   |
 |113|[path sum ii](https://leetcode.com/problems/path-sum-ii/)|[py](./problems/path_sum_ii/path_sum_ii.py) |
 |112|[path sum](https://leetcode.com/problems/path-sum/)|[py](./problems/path_sum/path_sum.py) |
 |111|[minimum depth of binary tree](https://leetcode.com/problems/minimum-depth-of-binary-tree/)|[py](./problems/minimum_depth_of_binary_tree/minimum_depth_of_binary_tree.py) |
 |110|[balanced binary tree](https://leetcode.com/problems/balanced-binary-tree/)|[cc](./problems/balanced_binary_tree/balanced_binary_tree.cc) [py](./problems/balanced_binary_tree/balanced_binary_tree.py) |
 |109|[convert sorted list to binary search tree](https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/)|[py](./problems/convert_sorted_list_to_binary_search_tree/convert_sorted_list_to_binary_search_tree.py) |
 |108|[convert sorted array to binary search tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/)|[py](./problems/convert_sorted_array_to_binary_search_tree/convert_sorted_array_to_binary_search_tree.py) |
-|107|[binary tree level order traversal ii](https://leetcode.com/problems/binary-tree-level-order-traversal-ii/)|[py](./problems/binary_tree_level_order_traversal_ii/binary_tree_level_order_traversal_ii.py) |
 |107|[binary tree level order traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)|[cc](./problems/binary_tree_level_order_traversal/binary_tree_level_order_traversal.cc) [py](./problems/binary_tree_level_order_traversal/binary_tree_level_order_traversal.py) |
+|107|[binary tree level order traversal ii](https://leetcode.com/problems/binary-tree-level-order-traversal-ii/)|[py](./problems/binary_tree_level_order_traversal_ii/binary_tree_level_order_traversal_ii.py) |
 |104|[maximum depth of binary tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/)|[py](./problems/maximum_depth_of_binary_tree/maximum_depth_of_binary_tree.py) |
 |103|[binary tree zigzag level order traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)|[cc](./problems/binary_tree_zigzag_level_order_traversal/binary_tree_zigzag_level_order_traversal.cc) |
 |101|[symmetric tree](https://leetcode.com/problems/symmetric-tree/)|[py](./problems/symmetric_tree/symmetric_tree.py) |

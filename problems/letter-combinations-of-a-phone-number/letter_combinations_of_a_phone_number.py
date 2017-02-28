@@ -10,6 +10,9 @@ class Solution(object):
         # Recursively append the letters
         # Time: O(n!)
         # Space: O(n)
+        if not digits:
+            return []
+
         if len(digits) == 1:
             try:
                 return [char for char in self.buttons[digits[0]]]
@@ -31,4 +34,4 @@ class Solution(object):
         #         for post in combinations]  # Inner loop
 
 if __name__ == "__main__":
-    print Solution().letterCombinations("1234")
+    print Solution().letterCombinations("")

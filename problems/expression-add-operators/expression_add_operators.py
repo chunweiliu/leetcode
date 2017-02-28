@@ -1,6 +1,5 @@
 class Solution(object):
-    def addOperators(self, num, target, position=0, evaluation=0, multed=0,
-                     attemp='', ans=[]):
+    def addOperators(self, num, target):
         """
         :type num: str
         :type target: int
@@ -27,25 +26,32 @@ class Solution(object):
             else:
                 self.evaluator(num, target, i + 1,
                                evaluation + current_num, current_num,
-                               attemp+'+'+str(current_num), ans)
+                               attemp + '+' + str(current_num), ans)
+
                 self.evaluator(num, target, i + 1,
                                evaluation - current_num, -current_num,
                                attemp + '-' + str(current_num), ans)
                 self.evaluator(num, target, i + 1,
-                               evaluation-multed + multed*current_num,
-                               multed*current_num,
+                               evaluation - multed + multed * current_num,
+                               multed * current_num,
                                attemp + '*' + str(current_num), ans)
         return ans
 
-    def all_nums(self, num, position=0, attemp='', ans=[]):
-        # Warn-up. How to print all possible number strings given a num string?
-        if position == len(num):
-            ans.append(attemp)
+    def all_numbers(digits, attemp=[], results=[]):
+        """DFS print all combinations:
+                     123
+                 /    |    \
+                1    12   123
+              /  \     \
+             2   23     3
+            /
+           3
+        """
+        if not digits:
+            results.append(attemp)
+            
+        for string_length in range(1, 1 + len(digits)):
+            num = digits[:string_length]        
+            all_numbers(digits[string_length:], attemp + [num], results)
 
-        for i in range(position, len(num)):
-            current_num = num[position:i+1]
-            if position == 0:
-                self.all_nums(num, i + 1, current_num, ans)
-            else:
-                self.all_nums(num, i + 1, attemp + ', ' + current_num, ans)
-        return ans
+        return results
